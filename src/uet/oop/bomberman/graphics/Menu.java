@@ -7,8 +7,8 @@ import javafx.scene.text.Font;
 import uet.oop.bomberman.BombermanGame;
 
 public class Menu {
-    private int selectedOption = 0;  // 0: Start, 1: Exit
-    private final String[] options = {"Start Game", "Exit"};
+    protected int selectedOption = 0;  // 0: Start, 1: Exit
+    protected String[] options = {"Resume Game","Start Game", "Exit"};
 
     public void render(GraphicsContext gc) {
         gc.setFill(Color.BLACK);
@@ -18,7 +18,10 @@ public class Menu {
         gc.setFont(new Font(30));
 
         for (int i = 0; i < options.length; i++) {
-            if (i == selectedOption) {
+            if(i == 0 && !BombermanGame.canResume()){
+                gc.setFill(Color.GRAY);//vo hieu hoa resume game
+            }
+            else if (i == selectedOption) {
                 gc.setFill(Color.YELLOW);
                 gc.fillText("> " + options[i] + " <", 150, 200 + i * 50);
             } else {
@@ -28,17 +31,23 @@ public class Menu {
         }
     }
 
-    public void handleInput(KeyCode key) {
-        if (key == KeyCode.UP) {
-            selectedOption = (selectedOption - 1 + options.length) % options.length;
-        } else if (key == KeyCode.DOWN) {
-            selectedOption = (selectedOption + 1) % options.length;
-        } else if (key == KeyCode.ENTER) {
-            if (selectedOption == 0) {
-                BombermanGame.setState(BombermanGame.GameState.PLAYING);
-            } else if (selectedOption == 1) {
-                System.exit(0);
-            }
+    public void moveUp() {
+        selectedOption = (selectedOption - 1 + options.length) % options.length;
+    }
+
+    public void moveDown() {
+        selectedOption = (selectedOption + 1) % options.length;
+    }
+
+    public void select() {
+        if (selectedOption == 0 && BombermanGame.canResume()) {
+            BombermanGame.resumeGame();
+        }
+        else if (selectedOption == 1) {
+            BombermanGame.setCurrentState(BombermanGame.gameState.PLAYING);
+        }
+        else if(selectedOption == 2) {
+            System.exit(0);
         }
     }
 }

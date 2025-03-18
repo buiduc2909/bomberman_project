@@ -2,36 +2,82 @@ package uet.oop.bomberman.input;
 
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Bomber;
-import java.util.HashMap;
-import java.util.Map;
+import uet.oop.bomberman.graphics.Menu;
 
 public class KeyboardHandler {
     private final Bomber bomber;
-    private final Map<KeyCode, Runnable> keyActions = new HashMap<>();
+    private final Menu menu;
 
-    public KeyboardHandler(Scene scene, Bomber bomber) {
+    public KeyboardHandler(Scene scene, Bomber bomber, Menu menu) {
         this.bomber = bomber;
-
-        keyActions.put(KeyCode.W, bomber::moveUp);
-        keyActions.put(KeyCode.S, bomber::moveDown);
-        keyActions.put(KeyCode.A, bomber::moveLeft);
-        keyActions.put(KeyCode.D, bomber::moveRight);
-        keyActions.put(KeyCode.SPACE, bomber::placeBomb);
-
+        this.menu = menu;
 
         scene.setOnKeyPressed(event -> handleKeyPress(event.getCode()));
         scene.setOnKeyReleased(event -> handleKeyRelease(event.getCode()));
     }
 
     private void handleKeyPress(KeyCode key) {
-        Runnable action = keyActions.get(key);
-        if (action != null) {
-            action.run();
+        if (BombermanGame.getCurrentState() == BombermanGame.gameState.MENU || BombermanGame.getCurrentState() == BombermanGame.gameState.OVER) {
+            handleMenuInput(key);
+        } else if (BombermanGame.getCurrentState() == BombermanGame.gameState.PLAYING) {
+            if(key == KeyCode.ESCAPE) {
+                BombermanGame.setCurrentState(BombermanGame.gameState.MENU);
+            }
+            else {
+                handleGameInput(key);
+            }
+        }
+    }
+
+    private void handleMenuInput(KeyCode key) {
+        switch (key) {
+            case W:
+            case UP:
+                menu.moveUp();
+                break;
+            case S:
+            case DOWN:
+                menu.moveDown();
+                break;
+            case ENTER:
+                menu.select();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void handleGameInput(KeyCode key) {
+        switch (key) {
+            case W:
+            case UP:
+                bomber.moveUp();
+                break;
+            case S:
+            case DOWN:
+                bomber.moveDown();
+                break;
+            case A:
+            case LEFT:
+                bomber.moveLeft();
+                break;
+            case D:
+            case RIGHT:
+                bomber.moveRight();
+                break;
+            case SPACE:
+                bomber.placeBomb();
+                break;
+            default:
+                break;
         }
     }
 
     private void handleKeyRelease(KeyCode key) {
-        bomber.stopMove();
+        if (BombermanGame.getCurrentState() == BombermanGame.gameState.PLAYING) {
+            bomber.stopMove();
+        }
     }
 }

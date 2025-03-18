@@ -10,21 +10,23 @@ import javafx.stage.Stage;
 import uet.oop.bomberman.entities.*;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.graphics.Menu;
+import uet.oop.bomberman.graphics.gameOverMenu;
 import uet.oop.bomberman.input.KeyboardHandler;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class BombermanGame extends Application {
-    public enum GameState {
+    public enum gameState {
         MENU,
         PLAYING,
         OVER
     }
+
+    private static gameState currentState = gameState.MENU; //bat dau o menu
+    private static gameState previousState = null;
 
     public static final int WIDTH = 20;  // Kích thước màn hình hiển thị
     public static final int HEIGHT = 15;
@@ -43,9 +45,35 @@ public class BombermanGame extends Application {
     private List<Entity> enemies = new ArrayList<>();
     private Bomber bomber;
     private Menu menu;
+    private gameOverMenu gameovermenu;
 
     public static void main(String[] args) {
         Application.launch(BombermanGame.class);
+    }
+
+    public static gameState getCurrentState() {
+        return currentState;
+    }
+
+    public static void setCurrentState(gameState state) {
+        if (state == BombermanGame.gameState.MENU) {
+            previousState = currentState;  // Lưu trạng thái trước đó
+        }
+        BombermanGame.currentState = state;
+    }
+
+    public static void restartGame() {
+        currentState = gameState.PLAYING;
+    }
+
+    public static boolean canResume() {
+        return previousState == gameState.PLAYING;  // Chỉ có thể Resume nếu trước đó đang chơi
+    }
+
+    public static void resumeGame() {
+        if (previousState == gameState.PLAYING) {
+            currentState = gameState.PLAYING;
+        }
     }
 
     @Override
@@ -61,9 +89,13 @@ public class BombermanGame extends Application {
         // Tạo Scene
         Scene scene = new Scene(root);
 
+        //tao menu
+        menu = new Menu();
+        gameovermenu = new gameOverMenu();
+
         // Tạo nhân vật chính (Bomber)
         bomber = new Bomber(1 * Sprite.SCALED_SIZE, 1 * Sprite.SCALED_SIZE, Sprite.player_right.getFxImage(), stillObjects, bombs,enemies);
-        new KeyboardHandler(scene, bomber);
+        new KeyboardHandler(scene, bomber,menu);
 
         // Thêm scene vào stage
         stage.setScene(scene);
@@ -149,23 +181,39 @@ public class BombermanGame extends Application {
     }
 
     public void update() {
-        bomber.update();
-
-        // Dùng Iterator để xóa kẻ địch khi chết
-        Iterator<Entity> iterator = enemies.iterator();
-        while (iterator.hasNext()) {
-            Entity enemy = iterator.next();
-            enemy.update();
-            if (enemy instanceof Ghost && !((Ghost) enemy).isAlive()) {
-                iterator.remove();
+        if(currentState == gameState.PLAYING) {
+            bomber.update();
+            checkBomberStatus();
+            // Dùng Iterator để xóa kẻ địch khi chết
+            Iterator<Entity> iterator = enemies.iterator();
+            while (iterator.hasNext()) {
+                Entity enemy = iterator.next();
+                enemy.update();
+                if (enemy instanceof Ghost && !((Ghost) enemy).isAlive()) {
+                    iterator.remove();
+                }
             }
+
+            // Cập nhật bom
+            bombs.forEach(Entity::update);
+
+            // Cập nhật camera
+            updateCamera();
         }
+    }
 
-        // Cập nhật bom
-        bombs.forEach(Entity::update);
-
-        // Cập nhật camera
-        updateCamera();
+    public void checkBomberStatus() {
+        if(bomber.isDead()){
+            // Tạo Timer để delay 2 giây trước khi set trạng thái OVER
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    setCurrentState(gameState.OVER);
+                    timer.cancel(); // Hủy timer sau khi hoàn thành
+                }
+            }, 2000); // Delay 2 giây (2000 ms)
+        }
     }
 
     private void updateCamera() {
@@ -182,42 +230,50 @@ public class BombermanGame extends Application {
     public void render() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        // Vẽ nền bản đồ trong camera
-        int startX = cameraX / Sprite.SCALED_SIZE;
-        int startY = cameraY / Sprite.SCALED_SIZE;
-        int endX = Math.min(startX + WIDTH, mapWidth);
-        int endY = Math.min(startY + HEIGHT, mapHeight);
+        if(currentState == gameState.MENU) {
+            menu.render(gc);
+        }
+        else if(currentState == gameState.PLAYING) {
+            // Vẽ nền bản đồ trong camera
+            int startX = cameraX / Sprite.SCALED_SIZE;
+            int startY = cameraY / Sprite.SCALED_SIZE;
+            int endX = Math.min(startX + WIDTH, mapWidth);
+            int endY = Math.min(startY + HEIGHT, mapHeight);
 
-        for (int j = startY; j < endY; j++) {
-            for (int i = startX; i < endX; i++) {
-                stillObjects.get(j * mapWidth + i).render(gc);
+            for (int j = startY; j < endY; j++) {
+                for (int i = startX; i < endX; i++) {
+                    stillObjects.get(j * mapWidth + i).render(gc);
+                }
             }
-        }
 
-        // Vẽ kẻ địch
-        for (Entity enemy : enemies) {
-            if (isInCamera(enemy)) {
-                enemy.render(gc);
+            // Vẽ kẻ địch
+            for (Entity enemy : enemies) {
+                if (isInCamera(enemy)) {
+                    enemy.render(gc);
+                }
             }
-        }
 
-        // Vẽ nhân vật chính
-        if (isInCamera(bomber)) {
-            bomber.render(gc);
-        }
+            // Vẽ nhân vật chính
+            if (isInCamera(bomber)) {
+                bomber.render(gc);
+            }
 
-        // Vẽ bom
-        for (Entity bomb : bombs) {
-            if (isInCamera(bomb)) {
-                bomb.render(gc);
-                if (bomb instanceof Bomb) {
-                    for (Entity explosion : ((Bomb) bomb).getExplosionEffects()) {
-                        if (isInCamera(explosion)) {
-                            explosion.render(gc);
+            // Vẽ bom
+            for (Entity bomb : bombs) {
+                if (isInCamera(bomb)) {
+                    bomb.render(gc);
+                    if (bomb instanceof Bomb) {
+                        for (Entity explosion : ((Bomb) bomb).getExplosionEffects()) {
+                            if (isInCamera(explosion)) {
+                                explosion.render(gc);
+                            }
                         }
                     }
                 }
             }
+        }
+        else if(currentState == gameState.OVER){
+            gameovermenu.render(gc);
         }
     }
 

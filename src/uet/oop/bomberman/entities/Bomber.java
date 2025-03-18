@@ -14,6 +14,16 @@ public class Bomber extends Entity {
     private int hp;
     private boolean dead;
     private long deathStartTime = 0;
+    private boolean invincible = false;
+    private long invincibleStartTime = 0;
+
+    public boolean isDead() {
+        return dead;
+    }
+
+    public void setDead(boolean dead) {
+        this.dead = dead;
+    }
 
     public List<Entity> getStillObjects() {
         return stillObjects;
@@ -136,11 +146,17 @@ public class Bomber extends Entity {
     }
 
     public void takeDamage() {
+        if (dead || invincible) return; // Không nhận sát thương nếu đã chết hoặc đang bất tử
         if(dead) return;
         hp--;
         if (hp <= 0) {
             die();
             stopMove();
+        }
+        else {
+            // Kích hoạt chế độ bất tử trong 1 giây
+            invincible = true;
+            invincibleStartTime = System.currentTimeMillis();
         }
     }
 
@@ -172,6 +188,17 @@ public class Bomber extends Entity {
             }
             return;
         }
+        if (invincible) {
+            if (System.currentTimeMillis() - invincibleStartTime > 1000) {
+                invincible = false;
+            }
+        }
+
+        // Hiệu ứng nhấp nháy (ẩn/hiện nhân vật)
+        if (invincible && (System.currentTimeMillis() / 100) % 2 == 0) {
+            img = null; // Ẩn nhân vật
+        }
+        else {
         int newX = x, newY = y;
 
         if (movingUp) {
@@ -215,5 +242,6 @@ public class Bomber extends Entity {
             }
         }
         checkCollisionWithEnemies();
+        }
     }
 }
