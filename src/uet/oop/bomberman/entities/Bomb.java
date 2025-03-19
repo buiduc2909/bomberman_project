@@ -15,6 +15,7 @@ public class Bomb extends Entity {
     private boolean exploded = false;
     private int explosionIndex = 0;
     private List<ExplosionEffect> explosionEffects = new ArrayList<>();
+    private int blastRange;
 
     private Image[][] explosionSprites = {
             {Sprite.explosion_horizontal_left_last.getFxImage(), Sprite.explosion_horizontal_left_last1.getFxImage(), Sprite.explosion_horizontal_left_last2.getFxImage()},
@@ -32,12 +33,13 @@ public class Bomb extends Entity {
         this.explosionEffects = explosionEffects;
     }
 
-    public Bomb(int x, int y, List<Entity> stillObjects, List<Entity> bombs) {
+    public Bomb(int x, int y, List<Entity> stillObjects, List<Entity> bombs, int blastRange) {
         super(x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE, Sprite.bomb.getFxImage());
         this.stillObjects = stillObjects;
         this.bombs = bombs;
         this.x = x * Sprite.SCALED_SIZE;
         this.y = y * Sprite.SCALED_SIZE;
+        this.blastRange = blastRange;
         System.out.println("🧨 Bomb placed at " + x + ", " + y);
         triggerExplosion();
     }
@@ -59,23 +61,24 @@ public class Bomb extends Entity {
     private void explode() {
         int bombX = this.x / Sprite.SCALED_SIZE;
         int bombY = this.y / Sprite.SCALED_SIZE;
-        int range = getBlastRange();
 
-        for (int i = 1; i <= range; i++) {
+        for (int i = 1; i <= blastRange; i++) {
+            boolean isLast = (i == blastRange);
+
             checkAndReplace(bombX + i, bombY);
-            createExplosionEffect(bombX + i, bombY, 1);
+            createExplosionEffect(bombX + i, bombY, 1, isLast);
             System.out.println("💥 Right explosion at (" + (bombX + i) + ", " + bombY + ")");
 
             checkAndReplace(bombX - i, bombY);
-            createExplosionEffect(bombX - i, bombY, 0);
+            createExplosionEffect(bombX - i, bombY, 0, isLast);
             System.out.println("💥 Left explosion at (" + (bombX - i) + ", " + bombY + ")");
 
             checkAndReplace(bombX, bombY + i);
-            createExplosionEffect(bombX, bombY + i, 3);
+            createExplosionEffect(bombX, bombY + i, 3, isLast);
             System.out.println("💥 Down explosion at (" + bombX + ", " + (bombY + i) + ")");
 
             checkAndReplace(bombX, bombY - i);
-            createExplosionEffect(bombX, bombY - i, 2);
+            createExplosionEffect(bombX, bombY - i, 2, isLast);
             System.out.println("💥 Up explosion at (" + bombX + ", " + (bombY - i) + ")");
         }
 
@@ -88,6 +91,7 @@ public class Bomb extends Entity {
         }, 600);
         System.out.println("🔥 Explosion animation started");
     }
+
 
     private void checkAndReplace(int x, int y) {
         for (int i = 0; i < stillObjects.size(); i++) {
@@ -110,11 +114,16 @@ public class Bomb extends Entity {
 
     }
 
-    private void createExplosionEffect(int x, int y, int direction) {
+    private void createExplosionEffect(int x, int y, int direction, boolean isLast) {
         System.out.println("💥 Explosion effect created at " + x + ", " + y);
-        ExplosionEffect explosion = new ExplosionEffect(x, y, explosionSprites[direction][0], direction);
+        Image img = isLast ? explosionSprites[direction][0] : Sprite.explosion_horizontal.getFxImage();
+        if (direction == 2 || direction == 3) {
+            img = isLast ? explosionSprites[direction][0] : Sprite.explosion_vertical.getFxImage();
+        }
+        ExplosionEffect explosion = new ExplosionEffect(x, y, img, direction);
         explosionEffects.add(explosion);
     }
+
 
     private void animateExplosion() {
         Timer explosionTimer = new Timer();

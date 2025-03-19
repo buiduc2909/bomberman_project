@@ -200,7 +200,10 @@ public class Oneal extends Ghost {
         if (x < 0 || y < 0 || x >= mapWidth || y >= mapHeight) {
             return false;
         }
-
+        if (stillObjects == null) {
+            System.out.println("⚠️ stillObjects bị null!");
+            return false;
+        }
         for (Entity entity : stillObjects) {
             int entityX = entity.getX() / Sprite.SCALED_SIZE;
             int entityY = entity.getY() / Sprite.SCALED_SIZE;

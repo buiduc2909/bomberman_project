@@ -17,9 +17,9 @@ public class gameOverMenu extends Menu {
     @Override
     public void render(GraphicsContext gc) {
         fadeOpacity = Math.min(fadeOpacity + 0.02, 1.0); // Tăng từ từ nhưng không quá 1.0
-        // Hiệu ứng nền đen
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, BombermanGame.WIDTH * Sprite.SCALED_SIZE, BombermanGame.HEIGHT * Sprite.SCALED_SIZE);
+
+        // Vẽ ảnh nền
+        gc.drawImage(background, 0, 0, BombermanGame.WIDTH * Sprite.SCALED_SIZE, BombermanGame.HEIGHT * Sprite.SCALED_SIZE);
 
         // Hiệu ứng chữ "Game Over" hiện dần
         if (alpha < 1) {

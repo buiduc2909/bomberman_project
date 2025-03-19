@@ -5,17 +5,26 @@ import uet.oop.bomberman.graphics.Sprite;
 import java.util.List;
 
 public class Bomber extends Entity {
-    private int speed = 2;
+    private int bombLimit = 1;        // Số lượng bom tối đa
+    private double speed = 0.25;      // Tốc độ di chuyển
+    private int frameCounter = 0;
+    private int frameDelay = 5; // Số frame chờ giữa các lần đổi ảnh
+    private int moveDelay = 30;
+    private int moveCounter = 0;
+    private int explosionRange = 1;   // Tầm nổ của bom
     private boolean movingUp, movingDown, movingLeft, movingRight;
     private List<Entity> enemies;
     private List<Entity> stillObjects;
     private List<Entity> bombs;
+    private List<Item> items;
     private int animationStep = 0;
     private int hp;
     private boolean dead;
     private long deathStartTime = 0;
     private boolean invincible = false;
     private long invincibleStartTime = 0;
+    private long lastMoveTime = 0;
+    private final long MOVE_DELAY = 100; // Độ trễ giữa các bước di chuyển (milliseconds)
 
     public boolean isDead() {
         return dead;
@@ -49,10 +58,11 @@ public class Bomber extends Entity {
         this.hp = hp;
     }
 
-    public Bomber(int x, int y, Image img, List<Entity> stillObjects, List<Entity> bombs, List<Entity> enemies) {
+    public Bomber(int x, int y, Image img, List<Entity> stillObjects, List<Entity> bombs, List<Entity> enemies, List<Item> items) {
         super(x, y, img);
         this.stillObjects = stillObjects;
         this.enemies = enemies;
+        this.items = items;
         this.bombs = bombs;
         this.dead = false;
         this.hp = 3;
@@ -64,57 +74,68 @@ public class Bomber extends Entity {
     }
 
     public void moveUp() {
-        if(!dead) {
+        if (!dead && System.currentTimeMillis() - lastMoveTime >= MOVE_DELAY) {
             int newY = y - Sprite.SCALED_SIZE;
             if (canMove(x, newY)) {
                 movingUp = true;
                 movingDown = movingLeft = movingRight = false;
                 y = newY;
+                lastMoveTime = System.currentTimeMillis(); // Cập nhật thời gian di chuyển
             }
         }
     }
 
     public void moveDown() {
-        if(!dead) {
+        if (!dead && System.currentTimeMillis() - lastMoveTime >= MOVE_DELAY) {
             int newY = y + Sprite.SCALED_SIZE;
             if (canMove(x, newY)) {
                 movingDown = true;
                 movingUp = movingLeft = movingRight = false;
                 y = newY;
+                lastMoveTime = System.currentTimeMillis();
             }
         }
     }
 
     public void moveLeft() {
-        if(!dead) {
+        if (!dead && System.currentTimeMillis() - lastMoveTime >= MOVE_DELAY) {
             int newX = x - Sprite.SCALED_SIZE;
             if (canMove(newX, y)) {
                 movingLeft = true;
                 movingUp = movingDown = movingRight = false;
                 x = newX;
+                lastMoveTime = System.currentTimeMillis();
             }
         }
     }
 
     public void moveRight() {
-        if(!dead) {
+        if (!dead && System.currentTimeMillis() - lastMoveTime >= MOVE_DELAY) {
             int newX = x + Sprite.SCALED_SIZE;
             if (canMove(newX, y)) {
                 movingRight = true;
                 movingUp = movingDown = movingLeft = false;
                 x = newX;
+                lastMoveTime = System.currentTimeMillis();
             }
         }
     }
 
     public void stopMove() {
         movingUp = movingDown = movingLeft = movingRight = false;
+        lastMoveTime = 0;
     }
 
-    private boolean canMove(int newX, int newY) {
+    private boolean canMove(double newX, double newY) {
+        double centerX = newX + Sprite.SCALED_SIZE / 2.0;
+        double centerY = newY + Sprite.SCALED_SIZE / 2.0;
         for (Entity entity : stillObjects) {
             if (entity instanceof Wall || entity instanceof Brick) {
-                if (entity.getX() == newX && entity.getY() == newY) {
+                double entityLeft = entity.getX();
+                double entityRight = entity.getX() + Sprite.SCALED_SIZE;
+                double entityTop = entity.getY();
+                double entityBottom = entity.getY() + Sprite.SCALED_SIZE;
+                if (centerX > entityLeft && centerX < entityRight && centerY > entityTop && centerY < entityBottom) {
                     return false;
                 }
             }
@@ -124,6 +145,10 @@ public class Bomber extends Entity {
 
     public void placeBomb() {
         if(dead) return;
+        if(bombs.size() >= bombLimit){
+            System.out.println("Cannot place more bombs! Limit reached: " + bombLimit);
+            return;
+        }
         int bombX = this.x / Sprite.SCALED_SIZE;
         int bombY = this.y / Sprite.SCALED_SIZE;
 
@@ -133,7 +158,7 @@ public class Bomber extends Entity {
             }
         }
 
-        Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs);
+        Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs, explosionRange);
         bombs.add(bomb);
     }
 
@@ -188,60 +213,127 @@ public class Bomber extends Entity {
             }
             return;
         }
-        if (invincible) {
-            if (System.currentTimeMillis() - invincibleStartTime > 1000) {
-                invincible = false;
-            }
+
+        if (invincible && System.currentTimeMillis() - invincibleStartTime > 1000) {
+            invincible = false;
         }
 
-        // Hiệu ứng nhấp nháy (ẩn/hiện nhân vật)
-        if (invincible && (System.currentTimeMillis() / 100) % 2 == 0) {
-            img = null; // Ẩn nhân vật
-        }
-        else {
-        int newX = x, newY = y;
+        move();// Di chuyển nhân vật nếu có phím nhấn
+        updateImage();
+        checkCollisionWithEnemies();
+        pickUpItem();
+    }
+
+    private void updateImage() {
+        frameCounter++;
+        if (frameCounter < frameDelay) return;
+        frameCounter = 0; // Reset bộ đếm khi đổi ảnh
 
         if (movingUp) {
-            newY -= speed;
-            if (canMove(x, newY)) {
-                animationStep = (animationStep + 1) % 3;
-                img = (animationStep == 0) ? Sprite.player_up.getFxImage() :
-                        (animationStep == 1) ? Sprite.player_up_1.getFxImage() :
-                                Sprite.player_up_2.getFxImage();
+            animationStep = (animationStep + 1) % 3;
+            img = (animationStep == 0) ? Sprite.player_up.getFxImage() :
+                    (animationStep == 1) ? Sprite.player_up_1.getFxImage() :
+                            Sprite.player_up_2.getFxImage();
+        } else if (movingDown) {
+            animationStep = (animationStep + 1) % 3;
+            img = (animationStep == 0) ? Sprite.player_down.getFxImage() :
+                    (animationStep == 1) ? Sprite.player_down_1.getFxImage() :
+                            Sprite.player_down_2.getFxImage();
+        } else if (movingLeft) {
+            animationStep = (animationStep + 1) % 3;
+            img = (animationStep == 0) ? Sprite.player_left.getFxImage() :
+                    (animationStep == 1) ? Sprite.player_left_1.getFxImage() :
+                            Sprite.player_left_2.getFxImage();
+        } else if (movingRight) {
+            animationStep = (animationStep + 1) % 3;
+            img = (animationStep == 0) ? Sprite.player_right.getFxImage() :
+                    (animationStep == 1) ? Sprite.player_right_1.getFxImage() :
+                            Sprite.player_right_2.getFxImage();
+        }
+    }
 
+
+    private void move() {
+        moveCounter++;
+        if (frameCounter < moveDelay) return; // Chỉ cập nhật khi đủ delay
+        moveCounter = 0; // Reset bộ đếm
+
+        int newX = x;
+        int newY = y;
+
+        if (movingUp) {
+            if(canMove(newX, newY)) {
+                newY -= speed;
             }
         }
         if (movingDown) {
-            newY += speed;
-            if (canMove(x, newY)) {
-                animationStep = (animationStep + 1) % 3;
-                img = (animationStep == 0) ? Sprite.player_down.getFxImage() :
-                        (animationStep == 1) ? Sprite.player_down_1.getFxImage() :
-                                Sprite.player_down_2.getFxImage();
-
+            if(canMove(newX, newY)) {
+                newY += speed;
             }
         }
         if (movingLeft) {
-            newX -= speed;
-            if (canMove(newX, y)) {
-                animationStep = (animationStep + 1) % 3;
-                img = (animationStep == 0) ? Sprite.player_left.getFxImage() :
-                        (animationStep == 1) ? Sprite.player_left_1.getFxImage() :
-                                Sprite.player_left_2.getFxImage();
-
+            if(canMove(newX, newY)) {
+                newX -= speed;
             }
         }
         if (movingRight) {
-            newX += speed;
-            if (canMove(newX, y)) {
-                animationStep = (animationStep + 1) % 3;
-                img = (animationStep == 0) ? Sprite.player_right.getFxImage() :
-                        (animationStep == 1) ? Sprite.player_right_1.getFxImage() :
-                                Sprite.player_right_2.getFxImage();
-
+            if(canMove(newX, newY)) {
+                newX += speed;
             }
         }
-        checkCollisionWithEnemies();
+    }
+
+    public void pickUpItem() {
+        if (items == null || items.isEmpty()) {
+            System.out.println("Danh sách items trước khi nhặt: " + items);
+
+            return; // Không có item nào để nhặt
+        }
+        for (int i = 0; i < items.size(); i++) {
+            Item item = items.get(i);
+            if (this.getX() == item.getX() && this.getY() == item.getY() && !item.pickedUp) {
+                item.pickUp(this); // Nhặt vật phẩm
+                items.remove(i);    // Xóa khỏi danh sách
+                break;
+            }
         }
     }
+
+    private void removeItem(Entity item) {
+        items.remove(item);
+        System.out.println("Item removed from map.");
+    }
+
+
+    public void increaseBombLimit(Entity item) {
+        bombLimit++;
+        removeItem(item);
+        System.out.println("Bomb limit increased to: " + bombLimit);
+    }
+
+    public void increaseSpeed(Entity item) {
+        speed += 0.2;// Điều chỉnh mức tăng tốc độ
+        removeItem(item);
+        System.out.println("Speed increased to: " + speed);
+    }
+
+    public void increaseExplosionRange(Entity item) {
+        explosionRange++;
+        removeItem(item);
+        System.out.println("Explosion range increased to: " + explosionRange);
+    }
+
+    public int getBombLimit() {
+        return bombLimit;
+    }
+
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public int getExplosionRange() {
+        return explosionRange;
+    }
+
 }

@@ -1,14 +1,19 @@
-package uet.oop.bomberman.entities;
+package uet.oop.bomberman.entities.items;
 
 import javafx.scene.image.Image;
+import uet.oop.bomberman.entities.Bomber;
+import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.Item;
 
-public class Bombitem extends Entity {
-    public Bombitem(int x, int y, Image img) {
-        super(x, y, img);
+import java.util.List;
+
+public class Bombitem extends Item {
+    public Bombitem(int xUnit, int yUnit, Image img, List<Entity> stillObjects) {
+        super(xUnit, yUnit, img, stillObjects);
     }
 
     @Override
-    public void update() {
-        // Khi bomber chạm vào, có thể tăng số lượng bom
+    public void applyEffect(Bomber player) {
+        player.increaseBombLimit(this); // Giả định Bomber có phương thức này
     }
 }

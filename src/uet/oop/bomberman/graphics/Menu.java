@@ -2,22 +2,40 @@ package uet.oop.bomberman.graphics;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import uet.oop.bomberman.BombermanGame;
+import java.io.File;
 
 
 public class Menu {
     protected int selectedOption = 0;  // 0: Start, 1: Exit
     protected String[] options = {"Resume Game","Start Game", "Exit"};
 
-    public Image background;
+    private MediaPlayer mediaPlayer;
+    protected Image background;
     public Menu() {
         try {
             String path = getClass().getResource("/textures/main_menu_background.png").toExternalForm();
             background = new Image(path);
         } catch (Exception e) {
             System.out.println("Lỗi tải ảnh nền menu: " + e.getMessage());
+        }
+
+        // Tải và phát nhạc nền
+        try {
+            String musicPath = new File("res/sound/01 Title screen.mp3").toURI().toString();;
+            Media sound = new Media(musicPath);
+            mediaPlayer = new MediaPlayer(sound);
+            mediaPlayer.setOnEndOfMedia(() -> mediaPlayer.seek(Duration.ZERO)); // 🔄 Lặp lại nhạc
+            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Lặp vô hạn
+            mediaPlayer.setVolume(0.5); // 🔊 Điều chỉnh âm lượng (0.0 - 1.0)
+            mediaPlayer.play();
+        } catch (Exception e) {
+            System.out.println("Lỗi tải nhạc nền: " + e.getMessage());
         }
     }
 
