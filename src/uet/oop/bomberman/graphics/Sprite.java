@@ -57,8 +57,6 @@ public class Sprite {
 	public static Sprite player_dead2 = new Sprite(DEFAULT_SIZE, 5, 2, SpriteSheet.tiles, 13, 15);
 	public static Sprite player_dead3 = new Sprite(DEFAULT_SIZE, 6, 2, SpriteSheet.tiles, 16, 16);
 
-	public static Sprite heart_full = new Sprite(16, 0, 0, SpriteSheet.ui, 16, 16);
-	public static Sprite heart_lost = new Sprite(16, 1, 0, SpriteSheet.ui, 16, 16);
 	/*
 	|--------------------------------------------------------------------------
 	| Character

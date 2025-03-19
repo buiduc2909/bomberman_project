@@ -1,20 +1,32 @@
 package uet.oop.bomberman.graphics;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyCode;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import uet.oop.bomberman.BombermanGame;
+
 
 public class Menu {
     protected int selectedOption = 0;  // 0: Start, 1: Exit
     protected String[] options = {"Resume Game","Start Game", "Exit"};
 
-    public void render(GraphicsContext gc) {
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, BombermanGame.WIDTH * Sprite.SCALED_SIZE, BombermanGame.HEIGHT * Sprite.SCALED_SIZE);
+    public Image background;
+    public Menu() {
+        try {
+            String path = getClass().getResource("/textures/main_menu_background.png").toExternalForm();
+            background = new Image(path);
+        } catch (Exception e) {
+            System.out.println("Lỗi tải ảnh nền menu: " + e.getMessage());
+        }
+    }
 
-        gc.setFill(Color.WHITE);
+
+    public void render(GraphicsContext gc) {
+        gc.drawImage(background, 0, 0, BombermanGame.WIDTH * Sprite.SCALED_SIZE, BombermanGame.HEIGHT * Sprite.SCALED_SIZE);
+
+        //vẽ menu
+        gc.setFill(Color.BLACK);
         gc.setFont(new Font(30));
 
         for (int i = 0; i < options.length; i++) {
@@ -22,11 +34,11 @@ public class Menu {
                 gc.setFill(Color.GRAY);//vo hieu hoa resume game
             }
             else if (i == selectedOption) {
-                gc.setFill(Color.YELLOW);
-                gc.fillText("> " + options[i] + " <", 150, 200 + i * 50);
+                gc.setFill(Color.BLUE);
+                gc.fillText("> " + options[i] + " <", 300, 200 + i * 50);
             } else {
-                gc.setFill(Color.WHITE);
-                gc.fillText(options[i], 150, 200 + i * 50);
+                gc.setFill(Color.BLACK);
+                gc.fillText(options[i], 300, 200 + i * 50);
             }
         }
     }
