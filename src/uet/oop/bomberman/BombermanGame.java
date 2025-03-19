@@ -9,9 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
 import uet.oop.bomberman.entities.*;
 import uet.oop.bomberman.entities.items.Bombitem;
-import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.graphics.Menu;
-import uet.oop.bomberman.graphics.gameOverMenu;
+import uet.oop.bomberman.graphics.*;
 import uet.oop.bomberman.input.KeyboardHandler;
 
 import java.util.*;
@@ -23,6 +21,7 @@ public class BombermanGame extends Application {
     public enum gameState {
         MENU,
         PLAYING,
+        SELECTING_LEVEL,
         OVER
     }
 
@@ -48,10 +47,17 @@ public class BombermanGame extends Application {
     private List<Entity> enemies = new ArrayList<>();
     private List<Item> items = new ArrayList<>();
     private Bomber bomber;
-    private Menu menu;
-    private gameOverMenu gameovermenu;
+    private mainMenu menu;
 
     private long lastUpdate = 0; // Biến để theo dõi thời gian giữa các frame
+
+    public mainMenu getMenu() {
+        return menu;
+    }
+
+    public void setMenu(mainMenu menu) {
+        this.menu = menu;
+    }
 
     public static void main(String[] args) {
         Application.launch(BombermanGame.class);
@@ -62,7 +68,7 @@ public class BombermanGame extends Application {
     }
 
     public static void setCurrentState(gameState state) {
-        if (state == gameState.MENU) {
+        if (state == gameState.MENU || state == gameState.SELECTING_LEVEL) {
             previousState = currentState;
         }
         currentState = state;
@@ -92,16 +98,15 @@ public class BombermanGame extends Application {
 
         Scene scene = new Scene(root);
 
-        menu = new Menu();
-        gameovermenu = new gameOverMenu();
+        menu = new mainMenu(this);
 
         bomber = new Bomber(1 * Sprite.SCALED_SIZE, 1 * Sprite.SCALED_SIZE, Sprite.player_right.getFxImage(), stillObjects, bombs, enemies, items);
-        new KeyboardHandler(scene, bomber, menu);
+        new KeyboardHandler(scene, bomber, menu,this);
 
         stage.setScene(scene);
         stage.show();
 
-        createMap();
+        createMap("res/levels/level1.txt");
         entities.add(bomber);
 
         AnimationTimer timer = new AnimationTimer() {
@@ -117,8 +122,8 @@ public class BombermanGame extends Application {
         timer.start();
     }
 
-    public void createMap() {
-        try (BufferedReader br = new BufferedReader(new FileReader("res/levels/level1.txt"))) {
+    public void createMap(String levelFile) {
+        try (BufferedReader br = new BufferedReader(new FileReader(levelFile))) {
             String firstLine = br.readLine();
             if (firstLine == null) return;
 
@@ -130,6 +135,12 @@ public class BombermanGame extends Application {
             for (int j = 0; j < mapHeight; j++) {
                 String line = br.readLine();
                 if (line == null) break;
+
+                // Đảm bảo chiều dài dòng phù hợp với mapWidth
+                if (line.length() < mapWidth) {
+                    System.err.println("Lỗi: Dòng trong file không đủ dài. Dòng " + (j + 1) + " có chiều dài " + line.length() + ", trong khi bản đồ yêu cầu chiều dài là " + mapWidth);
+                    continue;  // Bỏ qua dòng này và chuyển sang dòng tiếp theo
+                }
 
                 for (int i = 0; i < mapWidth; i++) {
                     Entity object = null;
@@ -170,12 +181,25 @@ public class BombermanGame extends Application {
                             break;
                         default: object = new Grass(i, j, Sprite.grass.getFxImage());
                     }
-                    if (object != null){ stillObjects.add(object);}
+                    if (object != null) { stillObjects.add(object); }
                     if (item != null) items.add(item); // Chỉ thêm item vào danh sách items
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    public void setLevel(int level) {
+        // Tải cấp độ mới dựa trên level
+        currentState = gameState.PLAYING;
+        // Đảm bảo rằng file của các cấp độ có định dạng phù hợp
+        switch (level) {
+            case 1: createMap("res/levels/level1.txt"); break;
+            case 2: createMap("res/levels/level2.txt"); break;
+            case 3: createMap("res/levels/level3.txt"); break;
+            default: createMap("res/levels/level1.txt"); break; // Mặc định là level 1 nếu có lỗi
         }
     }
 
@@ -216,16 +240,20 @@ public class BombermanGame extends Application {
     public void render() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        if (currentState == gameState.MENU) {
+        if (this.currentState == gameState.MENU) {
             menu.render(gc);
-        } else if (currentState == gameState.PLAYING) {
+        }
+        else if(this.currentState == gameState.SELECTING_LEVEL){
+            menu.getLevelMenu().render(gc);
+        }
+        else if (this.currentState == gameState.PLAYING) {
             stillObjects.stream().filter(this::isInCamera).forEach(obj -> obj.render(gc));
             enemies.stream().filter(this::isInCamera).forEach(enemy -> enemy.render(gc));
             if (isInCamera(bomber)) bomber.render(gc);
             bombs.stream().filter(this::isInCamera).forEach(bomb -> bomb.render(gc));
             items.stream().filter(this::isInCamera).forEach(item -> item.render(gc));
-        } else if (currentState == gameState.OVER) {
-            gameovermenu.render(gc);
+        } else if (this.currentState == gameState.OVER) {
+            menu.getGameoverMenu().render(gc);
         }
     }
 
