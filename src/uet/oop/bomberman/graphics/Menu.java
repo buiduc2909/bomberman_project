@@ -27,7 +27,8 @@ public class Menu {
 
         // Tải và phát nhạc nền
         try {
-            String musicPath = new File("res/sound/01 Title screen.mp3").toURI().toString();;
+            String musicPath = getClass().getResource("/sound/01 Title Screen.wav").toExternalForm();
+            System.out.println("Đường dẫn file: " + musicPath);
             Media sound = new Media(musicPath);
             mediaPlayer = new MediaPlayer(sound);
             mediaPlayer.setOnEndOfMedia(() -> mediaPlayer.seek(Duration.ZERO)); // 🔄 Lặp lại nhạc
