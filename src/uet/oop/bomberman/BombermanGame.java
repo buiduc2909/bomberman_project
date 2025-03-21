@@ -29,7 +29,7 @@ public class BombermanGame extends Application {
     private static gameState previousState = null;
 
     public static final int WIDTH = 20;
-    public static final int HEIGHT = 15;
+    public static final int HEIGHT = 13;
     private static final double TARGET_FPS = 60; // Giới hạn FPS
     private static final double TIME_PER_FRAME = 1e9 / TARGET_FPS;
 
@@ -38,6 +38,8 @@ public class BombermanGame extends Application {
 
     private int cameraX = 0;
     private int cameraY = 0;
+    private int cameraWidth = WIDTH * Sprite.SCALED_SIZE;
+    private int cameraHeight =  HEIGHT * Sprite.SCALED_SIZE;
 
     private GraphicsContext gc;
     private Canvas canvas;
@@ -266,11 +268,9 @@ public class BombermanGame extends Application {
         int bomberX = bomber.getX();
         int bomberY = bomber.getY();
 
-        int maxCameraX = mapWidth * Sprite.SCALED_SIZE - WIDTH * Sprite.SCALED_SIZE;
-        int maxCameraY = mapHeight * Sprite.SCALED_SIZE - HEIGHT * Sprite.SCALED_SIZE;
-
-        cameraX = Math.max(0, Math.min(bomberX - WIDTH * Sprite.SCALED_SIZE / 2, maxCameraX));
-        cameraY = Math.max(0, Math.min(bomberY - HEIGHT * Sprite.SCALED_SIZE / 2, maxCameraY));
+        // Giữ camera trong giới hạn bản đồ
+        cameraX = Math.max(0, Math.min(bomberX - cameraWidth / 2, mapWidth * Sprite.SCALED_SIZE - cameraWidth));
+        cameraY = Math.max(0, Math.min(bomberY - cameraHeight / 2, mapHeight * Sprite.SCALED_SIZE - cameraHeight));
     }
 
     public int getCurrentLevel() {
@@ -282,6 +282,8 @@ public class BombermanGame extends Application {
 
     public void render() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.save();
+        gc.translate(-cameraX, -cameraY);  // Di chuyển camera trước khi vẽ
 
         if (currentState == gameState.MENU) {
             menu.render(gc);
@@ -290,6 +292,7 @@ public class BombermanGame extends Application {
             menu.getLevelMenu().render(gc);
         }
         else if (currentState == gameState.PLAYING) {
+            updateCamera();
             for (Entity obj : stillObjects) {
                 if (isInCamera(obj)) {
                     obj.render(gc);
@@ -322,10 +325,12 @@ public class BombermanGame extends Application {
                     item.render(gc);
                 }
             }
+            updateCamera();
 
         } else if (currentState == gameState.OVER) {
             menu.getGameoverMenu().render(gc);
         }
+        gc.restore();
     }
 
     private boolean isInCamera(Entity entity) {
