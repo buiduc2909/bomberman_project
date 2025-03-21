@@ -6,16 +6,21 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import uet.oop.bomberman.entities.*;
 import uet.oop.bomberman.entities.items.Bombitem;
 import uet.oop.bomberman.graphics.*;
 import uet.oop.bomberman.input.KeyboardHandler;
 
+import java.awt.*;
 import java.util.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 public class BombermanGame extends Application {
     public enum gameState {
@@ -29,7 +34,7 @@ public class BombermanGame extends Application {
     private static gameState previousState = null;
 
     public static final int WIDTH = 20;
-    public static final int HEIGHT = 13;
+    public static final int HEIGHT = 15;
     private static final double TARGET_FPS = 60; // Giới hạn FPS
     private static final double TIME_PER_FRAME = 1e9 / TARGET_FPS;
 
@@ -325,8 +330,17 @@ public class BombermanGame extends Application {
                     item.render(gc);
                 }
             }
-            updateCamera();
+            // Vẽ nền xám
+            gc.setFill(Color.web("#404040"));  // Màu xám đậm  // Thiết lập màu nền xám
+            gc.fillRect(0, (HEIGHT-2) * Sprite.SCALED_SIZE, WIDTH * Sprite.SCALED_SIZE, 2 * Sprite.SCALED_SIZE);  // Vẽ hình chữ nhật xám
 
+            // Vẽ chữ màu đen
+            Font font = Font.font("Arial", FontWeight.BOLD, 30);  // Phông chữ Arial đậm, kích thước 16
+            gc.setFont(font);
+            gc.setFill(Color.BLACK);  // Thiết lập màu chữ đen
+            gc.fillText("LEFT: " + bomber.getHp(), 10, (HEIGHT-1) * Sprite.SCALED_SIZE);  // Vẽ dòng HP
+
+            gc.fillText("Level: " + getCurrentLevel(), (WIDTH - 5)*Sprite.SCALED_SIZE, (HEIGHT-1) * Sprite.SCALED_SIZE);  // Vẽ dòng Level
         } else if (currentState == gameState.OVER) {
             menu.getGameoverMenu().render(gc);
         }
