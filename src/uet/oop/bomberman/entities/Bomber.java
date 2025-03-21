@@ -8,15 +8,16 @@ public class Bomber extends Entity {
     private int bombLimit = 1;        // Số lượng bom tối đa
     private double speed = 0.25;      // Tốc độ di chuyển
     private int frameCounter = 0;
-    private int frameDelay = 5; // Số frame chờ giữa các lần đổi ảnh
-    private int moveDelay = 30;
+    private final int frameDelay = 5; // Số frame chờ giữa các lần đổi ảnh
+    private final int moveDelay = 30;
     private int moveCounter = 0;
+    private boolean isVisible = true;
     private int explosionRange = 1;   // Tầm nổ của bom
     private boolean movingUp, movingDown, movingLeft, movingRight;
     private List<Entity> enemies;
     private List<Entity> stillObjects;
     private List<Entity> bombs;
-    private List<Item> items;
+    private final List<Item> items;
     private int animationStep = 0;
     private int hp;
     private boolean dead;
@@ -66,6 +67,10 @@ public class Bomber extends Entity {
         this.bombs = bombs;
         this.dead = false;
         this.hp = 3;
+    }
+
+    public void setImage(Image img){
+        this.img = img;
     }
 
     public void setPosition(int x, int y) {
@@ -214,14 +219,27 @@ public class Bomber extends Entity {
             return;
         }
 
-        if (invincible && System.currentTimeMillis() - invincibleStartTime > 1000) {
+        long elapsedTime = System.currentTimeMillis() - invincibleStartTime;
+        if (elapsedTime < 1000) {
+            isVisible = (elapsedTime / 100) % 2 == 0; // Đổi trạng thái mỗi 100ms
+        }
+        else if(elapsedTime >= 1000) {
             invincible = false;
+            isVisible = true;
         }
 
         move();// Di chuyển nhân vật nếu có phím nhấn
         updateImage();
         checkCollisionWithEnemies();
         pickUpItem();
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
     }
 
     private void updateImage() {

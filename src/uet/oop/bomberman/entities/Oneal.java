@@ -7,12 +7,16 @@ import javafx.scene.image.Image;
 import java.util.*;
 
 public class Oneal extends Ghost {
-    private Bomber bomber;
+    private final Bomber bomber;
     private int targetX, targetY;
-    private int mapWidth, mapHeight;
+    private final int mapWidth;
+    private final int mapHeight;
     private int currentTileX, currentTileY;
     private long lastMoveTime;
-    private static final long MOVE_DELAY = 500;
+
+    private static final long MIN_DELAY = 200;  // Giới hạn nhỏ nhất (ms)
+    private static final long MAX_DELAY = 500;  // Giới hạn lớn nhất (ms)
+    private final long MOVE_DELAY = randomDelay();
     private boolean isAlive;
     private int animationStep = 0; // Biến để theo dõi bước của hoạt ảnh
     private boolean movingLeft = true; // Xác định hướng di chuyển
@@ -24,6 +28,10 @@ public class Oneal extends Ghost {
         this.bomber = bomber;
         this.lastMoveTime = System.currentTimeMillis();
         this.isAlive = true;
+    }
+
+    private long randomDelay(){
+        return MIN_DELAY + new Random().nextInt((int) (MAX_DELAY - MIN_DELAY + 1));
     }
 
     public void setTarget(int x, int y) {
@@ -118,8 +126,7 @@ public class Oneal extends Ghost {
 
     private boolean isInBlastRange(int x, int y, int bombX, int bombY, int range) {
         if (x == bombX && Math.abs(y - bombY) <= range) return true;
-        if (y == bombY && Math.abs(x - bombX) <= range) return true;
-        return false;
+        return y == bombY && Math.abs(x - bombX) <= range;
     }
 
     public void die() {

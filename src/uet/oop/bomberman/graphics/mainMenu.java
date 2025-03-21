@@ -3,8 +3,8 @@ package uet.oop.bomberman.graphics;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Font;
 import uet.oop.bomberman.BombermanGame;
-
 import javafx.scene.paint.Color;
+import uet.oop.bomberman.SoundManager;
 
 public class mainMenu extends Menu {
     private SelectLevelMenu levelMenu;

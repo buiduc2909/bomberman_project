@@ -10,14 +10,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Bomb extends Entity {
-    private List<Entity> stillObjects;
-    private List<Entity> bombs;
+    private final List<Entity> stillObjects;
+    private final List<Entity> bombs;
     private boolean exploded = false;
     private int explosionIndex = 0;
     private List<ExplosionEffect> explosionEffects = new ArrayList<>();
-    private int blastRange;
+    private final int blastRange;
 
-    private Image[][] explosionSprites = {
+    private final Image[][] explosionSprites = {
             {Sprite.explosion_horizontal_left_last.getFxImage(), Sprite.explosion_horizontal_left_last1.getFxImage(), Sprite.explosion_horizontal_left_last2.getFxImage()},
             {Sprite.explosion_horizontal_right_last.getFxImage(), Sprite.explosion_horizontal_right_last1.getFxImage(), Sprite.explosion_horizontal_right_last2.getFxImage()},
             {Sprite.explosion_vertical_top_last.getFxImage(), Sprite.explosion_vertical_top_last1.getFxImage(), Sprite.explosion_vertical_top_last2.getFxImage()},

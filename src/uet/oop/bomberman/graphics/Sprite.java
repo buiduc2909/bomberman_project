@@ -211,9 +211,7 @@ public class Sprite {
 
 	private void load() {
 		for (int y = 0; y < SIZE; y++) {
-			for (int x = 0; x < SIZE; x++) {
-				_pixels[x + y * SIZE] = _sheet._pixels[(x + _x) + (y + _y) * _sheet.SIZE];
-			}
+            System.arraycopy(_sheet._pixels, (0 + _x) + (y + _y) * _sheet.SIZE, _pixels, y * SIZE, SIZE);
 		}
 	}
 	

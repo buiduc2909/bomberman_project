@@ -28,9 +28,9 @@ public class KeyboardHandler {
     }
 
     private void handleKeyPress(KeyCode key) {
-        if (game.getCurrentState() == BombermanGame.gameState.MENU || game.getCurrentState() == BombermanGame.gameState.OVER || game.getCurrentState() == BombermanGame.gameState.SELECTING_LEVEL) {
+        if (BombermanGame.getCurrentState() == BombermanGame.gameState.MENU || BombermanGame.getCurrentState() == BombermanGame.gameState.OVER || BombermanGame.getCurrentState() == BombermanGame.gameState.SELECTING_LEVEL) {
             handleMenuInput(key);
-        } else if (game.getCurrentState() == BombermanGame.gameState.PLAYING) {
+        } else if (BombermanGame.getCurrentState() == BombermanGame.gameState.PLAYING) {
             if(key == KeyCode.ESCAPE) {
                 game.setCurrentState(BombermanGame.gameState.MENU);
             }
@@ -41,7 +41,7 @@ public class KeyboardHandler {
     }
 
     private void handleMenuInput(KeyCode key) {
-        if (game.getCurrentState() == BombermanGame.gameState.MENU) {
+        if (BombermanGame.getCurrentState() == BombermanGame.gameState.MENU) {
             switch (key) {
                 case W:
                 case UP:
@@ -57,7 +57,7 @@ public class KeyboardHandler {
                 default:
                     break;
             }
-        } else if (game.getCurrentState() == BombermanGame.gameState.OVER) {
+        } else if (BombermanGame.getCurrentState() == BombermanGame.gameState.OVER) {
             // Xử lý sự kiện cho game over menu
             switch (key) {
                 case W:
@@ -74,7 +74,7 @@ public class KeyboardHandler {
                 default:
                     break;
             }
-        } else if (game.getCurrentState() == BombermanGame.gameState.SELECTING_LEVEL) {
+        } else if (BombermanGame.getCurrentState() == BombermanGame.gameState.SELECTING_LEVEL) {
             // Xử lý sự kiện cho select level menu
             switch (key) {
                 case W:
@@ -122,7 +122,7 @@ public class KeyboardHandler {
     }
 
     private void handleKeyRelease(KeyCode key) {
-        if (game.getCurrentState() == BombermanGame.gameState.PLAYING) {
+        if (BombermanGame.getCurrentState() == BombermanGame.gameState.PLAYING) {
             bomber.stopMove();
         }
     }

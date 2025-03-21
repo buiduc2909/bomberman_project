@@ -9,7 +9,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 class ExplosionEffect extends Entity {
-    private int direction;
+    private final int direction;
 
     public ExplosionEffect(int x, int y, Image img, int direction) {
         super(x , y, img);

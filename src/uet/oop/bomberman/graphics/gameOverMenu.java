@@ -34,11 +34,11 @@ public class gameOverMenu extends Menu {
         gc.setFont(new Font(30));
         for (int i = 0; i < options.length; i++) {
             if (i == selectedOption) {
-                gc.setFill(Color.YELLOW);  // Màu vàng cho lựa chọn hiện tại
-                gc.fillText("> " + options[i] + " <", 180, 200 + i * 50);
+                gc.setFill(Color.BLUE);  // Màu vàng cho lựa chọn hiện tại
+                gc.fillText("> " + options[i] + " <", 300, 200 + i * 50);
             } else {
-                gc.setFill(Color.WHITE);  // Màu trắng cho các lựa chọn khác
-                gc.fillText(options[i], 180, 200 + i * 50);
+                gc.setFill(Color.BLACK);  // Màu trắng cho các lựa chọn khác
+                gc.fillText(options[i], 300, 200 + i * 50);
             }
         }
     }
@@ -46,9 +46,9 @@ public class gameOverMenu extends Menu {
     @Override
     public void select() {
         if (selectedOption == 0) {  // "Retry"
-            BombermanGame.restartGame();  // Khởi động lại trò chơi
+            game.restartGame();  // Khởi động lại trò chơi
         } else if (selectedOption == 1) {  // "Main Menu"
-            BombermanGame.setCurrentState(BombermanGame.gameState.MENU);  // Quay lại menu chính
+            game.setCurrentState(BombermanGame.gameState.MENU);  // Quay lại menu chính
         }
     }
 }

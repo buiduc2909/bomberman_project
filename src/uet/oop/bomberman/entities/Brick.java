@@ -9,7 +9,7 @@ import java.util.TimerTask;
 
 public class Brick extends Entity {
     private boolean exploding = false;
-    private Timer timer = new Timer();
+    private final Timer timer = new Timer();
 
     public Brick(int x, int y, Image img) {
         super(x, y, img);

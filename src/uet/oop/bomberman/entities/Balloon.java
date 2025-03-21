@@ -4,10 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.image.Image;
 import uet.oop.bomberman.graphics.Sprite;
 
-import java.util.List;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class Balloon extends Ghost {
     private int direction = new Random().nextInt(4);
@@ -34,17 +31,18 @@ public class Balloon extends Ghost {
 
         int dx = 0, dy = 0;
         switch (direction) {
-            case 0: dy = -Sprite.SCALED_SIZE; img = getBalloomLeftSprite(); break;
-            case 1: dy = Sprite.SCALED_SIZE; img = getBalloomRightSprite(); break;
-            case 2: dx = -Sprite.SCALED_SIZE; img = getBalloomLeftSprite(); break;
-            case 3: dx = Sprite.SCALED_SIZE; img = getBalloomRightSprite(); break;
+            case 0: dy = -Sprite.SCALED_SIZE; img = getBalloomLeftSprite(); break; // Lên
+            case 1: dy = Sprite.SCALED_SIZE; img = getBalloomRightSprite(); break; // Xuống
+            case 2: dx = -Sprite.SCALED_SIZE; img = getBalloomLeftSprite(); break; // Trái
+            case 3: dx = Sprite.SCALED_SIZE; img = getBalloomRightSprite(); break; // Phải
         }
 
-        if (canMove(x + dx, y + dy)) {
+        // Nếu không thể đi tiếp, chọn hướng khác
+        if (!canMove(x + dx, y + dy)) {
+            direction = getNewDirection();
+        } else {
             x += dx;
             y += dy;
-        } else {
-            direction = new Random().nextInt(4);
         }
         animationStep = (animationStep + 1) % 3;
     }
@@ -115,8 +113,7 @@ public class Balloon extends Ghost {
 
     private boolean isInBlastRange(int x, int y, int bombX, int bombY, int range) {
         if (x == bombX && Math.abs(y - bombY) <= range) return true;
-        if (y == bombY && Math.abs(x - bombX) <= range) return true;
-        return false;
+        return y == bombY && Math.abs(x - bombX) <= range;
     }
 
     public void die() {
@@ -131,5 +128,19 @@ public class Balloon extends Ghost {
                 Platform.runLater(() -> enemies.remove(Balloon.this));
             }
         }, 2500);
+    }
+
+    private int getNewDirection() {
+        List<Integer> possibleDirections = new ArrayList<>();
+        if (canMove(x, y - Sprite.SCALED_SIZE)) possibleDirections.add(0); // Lên
+        if (canMove(x, y + Sprite.SCALED_SIZE)) possibleDirections.add(1); // Xuống
+        if (canMove(x - Sprite.SCALED_SIZE, y)) possibleDirections.add(2); // Trái
+        if (canMove(x + Sprite.SCALED_SIZE, y)) possibleDirections.add(3); // Phải
+
+        if (possibleDirections.isEmpty()) {
+            return direction; // Nếu không có hướng nào hợp lệ, giữ nguyên hướng cũ
+        }
+
+        return possibleDirections.get(new Random().nextInt(possibleDirections.size()));
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 public abstract class Item extends Entity {
     protected boolean pickedUp;
     private int oldX, oldY;
-    private List<Entity> stillObjects;
+    private final List<Entity> stillObjects;
     public Item(int xUnit, int yUnit, Image img, List<Entity> stillObjects) {
         super(xUnit, yUnit, img);
         this.stillObjects = stillObjects;
