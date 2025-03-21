@@ -290,18 +290,39 @@ public class BombermanGame extends Application {
             menu.getLevelMenu().render(gc);
         }
         else if (currentState == gameState.PLAYING) {
-            stillObjects.stream().filter(this::isInCamera).forEach(obj -> obj.render(gc));
-            enemies.stream().filter(this::isInCamera).forEach(enemy -> enemy.render(gc));
-            if (isInCamera(bomber) && bomber.isVisible()) bomber.render(gc);
-            bombs.stream().filter(this::isInCamera).forEach(bomb -> {
-                bomb.render(gc);
-                if (bomb instanceof Bomb) {
-                    ((Bomb) bomb).getExplosionEffects().stream()
-                            .filter(this::isInCamera)
-                            .forEach(explosion -> explosion.render(gc));
+            for (Entity obj : stillObjects) {
+                if (isInCamera(obj)) {
+                    obj.render(gc);
                 }
-            });
-            items.stream().filter(this::isInCamera).forEach(item -> item.render(gc));
+            }
+
+            for (Entity enemy : enemies) {
+                if (isInCamera(enemy)) {
+                    enemy.render(gc);
+                }
+            }
+
+            if (isInCamera(bomber) && bomber.isVisible()) {
+                bomber.render(gc);
+            }
+
+            for (Entity bomb : bombs) {
+                if (isInCamera(bomb)) {
+                    bomb.render(gc);
+                    for (ExplosionEffect explosion : ((Bomb)bomb).getExplosionEffects()) {
+                        if (isInCamera(explosion)) {
+                            explosion.render(gc);
+                        }
+                    }
+                }
+            }
+
+            for (Item item : items) {
+                if (isInCamera(item)) {
+                    item.render(gc);
+                }
+            }
+
         } else if (currentState == gameState.OVER) {
             menu.getGameoverMenu().render(gc);
         }
