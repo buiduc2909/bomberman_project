@@ -293,7 +293,14 @@ public class BombermanGame extends Application {
             stillObjects.stream().filter(this::isInCamera).forEach(obj -> obj.render(gc));
             enemies.stream().filter(this::isInCamera).forEach(enemy -> enemy.render(gc));
             if (isInCamera(bomber) && bomber.isVisible()) bomber.render(gc);
-            bombs.stream().filter(this::isInCamera).forEach(bomb -> bomb.render(gc));
+            bombs.stream().filter(this::isInCamera).forEach(bomb -> {
+                bomb.render(gc);
+                if (bomb instanceof Bomb) {
+                    ((Bomb) bomb).getExplosionEffects().stream()
+                            .filter(this::isInCamera)
+                            .forEach(explosion -> explosion.render(gc));
+                }
+            });
             items.stream().filter(this::isInCamera).forEach(item -> item.render(gc));
         } else if (currentState == gameState.OVER) {
             menu.getGameoverMenu().render(gc);

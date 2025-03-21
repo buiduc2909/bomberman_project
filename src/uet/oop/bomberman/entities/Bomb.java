@@ -117,11 +117,24 @@ public class Bomb extends Entity {
     private void createExplosionEffect(int x, int y, int direction, boolean isLast) {
         System.out.println("💥 Explosion effect created at " + x + ", " + y);
         Image img = isLast ? explosionSprites[direction][0] : Sprite.explosion_horizontal.getFxImage();
-        if (direction == 2 || direction == 3) {
+        if (img == null) {
+            System.out.println("❌ Explosion sprite is NULL!");
+        }
+        if(direction == 0 || direction == 1) {
+            img = isLast ? explosionSprites[direction][0] : Sprite.explosion_horizontal.getFxImage();
+            if (img == null) {
+                System.out.println("❌ Explosion sprite is NULL!");
+            }
+        }
+        else if (direction == 2 || direction == 3) {
             img = isLast ? explosionSprites[direction][0] : Sprite.explosion_vertical.getFxImage();
+            if (img == null) {
+                System.out.println("❌ Explosion sprite is NULL!");
+            }
         }
         ExplosionEffect explosion = new ExplosionEffect(x, y, img, direction);
         explosionEffects.add(explosion);
+
     }
 
 
