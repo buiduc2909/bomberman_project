@@ -5,14 +5,18 @@ import javafx.scene.image.Image;
 import uet.oop.bomberman.graphics.Sprite;
 
 import java.util.List;
+import java.util.Objects;
 
 public abstract class Item extends Entity {
     protected boolean pickedUp;
     private int oldX, oldY;
     private final List<Entity> stillObjects;
+    private int id;
+    private static int idCounter;
     public Item(int xUnit, int yUnit, Image img, List<Entity> stillObjects) {
         super(xUnit, yUnit, img);
         this.stillObjects = stillObjects;
+        this.id = idCounter++;
     }
 
     /**
@@ -51,4 +55,18 @@ public abstract class Item extends Entity {
         }
         // Item không có logic cập nhật liên tục, có thể mở rộng nếu cần
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;  // Nếu cùng một đối tượng
+        if (o == null || getClass() != o.getClass()) return false;  // Nếu đối tượng khác kiểu
+        Item item = (Item) o;
+        return id == item.id && x == item.x && y == item.y;  // So sánh theo id (hoặc các thuộc tính đặc trưng khác)
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);  // Tính hashCode dựa trên id
+    }
+
 }

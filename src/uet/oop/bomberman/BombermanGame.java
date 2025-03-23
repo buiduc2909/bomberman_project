@@ -105,6 +105,7 @@ public class BombermanGame extends Application {
         //recreate entities
         bomber.setHp(3);
         bomber.setDead(false);
+        bomber.setExplosionRange(1);
         bomber.setImage(Sprite.player_right.getFxImage());
         createMap(currentLevel);
 
@@ -291,6 +292,7 @@ public class BombermanGame extends Application {
         gc.translate(-cameraX, -cameraY);  // Di chuyển camera trước khi vẽ
 
         if (currentState == gameState.MENU) {
+            gc.restore();
             menu.render(gc);
         }
         else if(currentState == gameState.SELECTING_LEVEL){
@@ -342,6 +344,7 @@ public class BombermanGame extends Application {
 
             gc.fillText("Level: " + getCurrentLevel(), (WIDTH - 5)*Sprite.SCALED_SIZE, (HEIGHT-1) * Sprite.SCALED_SIZE);  // Vẽ dòng Level
         } else if (currentState == gameState.OVER) {
+            gc.restore();
             menu.getGameoverMenu().render(gc);
         }
         gc.restore();

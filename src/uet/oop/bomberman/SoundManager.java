@@ -9,7 +9,7 @@ public class SoundManager {
     private MediaPlayer mediaPlayer;
     private String filePath;
 
-    private SoundManager() { } // Private constructor để ngăn tạo nhiều thực thể
+    public SoundManager() { } // Private constructor để ngăn tạo nhiều thực thể
 
     public static SoundManager getInstance() {
         if (instance == null) {

@@ -27,6 +27,10 @@ public class Bomber extends Entity {
     private long lastMoveTime = 0;
     private final long MOVE_DELAY = 100; // Độ trễ giữa các bước di chuyển (milliseconds)
 
+    public void setExplosionRange(int explosionRange) {
+        this.explosionRange = explosionRange;
+    }
+
     public boolean isDead() {
         return dead;
     }
@@ -311,7 +315,6 @@ public class Bomber extends Entity {
             Item item = items.get(i);
             if (this.getX() == item.getX() && this.getY() == item.getY() && !item.pickedUp) {
                 item.pickUp(this); // Nhặt vật phẩm
-                items.remove(i);    // Xóa khỏi danh sách
                 break;
             }
         }
