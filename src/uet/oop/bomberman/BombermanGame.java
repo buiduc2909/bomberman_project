@@ -337,17 +337,27 @@ public class BombermanGame extends Application {
                     item.render(gc);
                 }
             }
+            gc.restore();
             // Vẽ nền xám
-            gc.setFill(Color.web("#404040"));  // Màu xám đậm  // Thiết lập màu nền xám
-            gc.fillRect(0, (HEIGHT-2) * Sprite.SCALED_SIZE, WIDTH * Sprite.SCALED_SIZE, 2 * Sprite.SCALED_SIZE);  // Vẽ hình chữ nhật xám
+            gc.setFill(Color.rgb(192, 192, 192));  // Màu xám sáng giống ảnh
+            gc.fillRect(0, (HEIGHT-2) * Sprite.SCALED_SIZE, WIDTH * Sprite.SCALED_SIZE, 2 * Sprite.SCALED_SIZE);
+
+            //vẽ đường kẻ
+            gc.setStroke(Color.BLACK);
+            gc.setLineWidth(2);
+            gc.strokeRect(0, (HEIGHT-2) * Sprite.SCALED_SIZE, WIDTH * Sprite.SCALED_SIZE, 2 * Sprite.SCALED_SIZE);
 
             // Vẽ chữ màu đen
-            Font font = Font.font("Arial", FontWeight.BOLD, 30);  // Phông chữ Arial đậm, kích thước 16
-            gc.setFont(font);
-            gc.setFill(Color.BLACK);  // Thiết lập màu chữ đen
-            gc.fillText("LEFT: " + bomber.getHp(), 10, (HEIGHT-1) * Sprite.SCALED_SIZE);  // Vẽ dòng HP
+            Font pixelFont = Font.font("8bit", FontWeight.BOLD, 30);
+            gc.setFont(pixelFont);
+            // Vẽ viền chữ (Stroke)
+            gc.setFill(Color.BLACK);
+            gc.fillText("LEVEL:", 20, (HEIGHT-1) * Sprite.SCALED_SIZE);
+            gc.fillText(String.valueOf(getCurrentLevel()), 115, (HEIGHT-1) * Sprite.SCALED_SIZE);
 
-            gc.fillText("Level: " + getCurrentLevel(), (WIDTH - 5)*Sprite.SCALED_SIZE, (HEIGHT-1) * Sprite.SCALED_SIZE);  // Vẽ dòng Level
+            gc.fillText("LEFT:", WIDTH * Sprite.SCALED_SIZE - 150, (HEIGHT-1) * Sprite.SCALED_SIZE);
+            gc.fillText(String.valueOf(bomber.getHp()), WIDTH * Sprite.SCALED_SIZE - 70, (HEIGHT-1) * Sprite.SCALED_SIZE);
+
         } else if (currentState == gameState.OVER) {
             gc.restore();
             menu.getGameoverMenu().render(gc);

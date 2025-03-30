@@ -4,7 +4,6 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Bomber;
-import uet.oop.bomberman.graphics.Menu;
 import uet.oop.bomberman.graphics.SelectLevelMenu;
 import uet.oop.bomberman.graphics.gameOverMenu;
 import uet.oop.bomberman.graphics.mainMenu;

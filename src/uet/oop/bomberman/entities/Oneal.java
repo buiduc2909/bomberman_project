@@ -14,8 +14,8 @@ public class Oneal extends Ghost {
     private int currentTileX, currentTileY;
     private long lastMoveTime;
 
-    private static final long MIN_DELAY = 200;  // Giới hạn nhỏ nhất (ms)
-    private static final long MAX_DELAY = 500;  // Giới hạn lớn nhất (ms)
+    private static final long MIN_DELAY = 500;  // Giới hạn nhỏ nhất (ms)
+    private static final long MAX_DELAY = 1000;  // Giới hạn lớn nhất (ms)
     private final long MOVE_DELAY = randomDelay();
     private boolean isAlive;
     private int animationStep = 0; // Biến để theo dõi bước của hoạt ảnh
