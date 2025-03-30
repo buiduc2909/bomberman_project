@@ -200,6 +200,11 @@ public class BombermanGame extends Application {
                             enemies.add(object);
                             object = new Grass(i, j, Sprite.grass.getFxImage());
                             break;
+                        case '3':
+                            object = new BomberEnemy(i, j, Sprite.oneal_left1.getFxImage(), mapWidth, mapHeight, bomber, stillObjects, bombs);
+                            enemies.add(object);
+                            object = new Grass(i, j, Sprite.grass.getFxImage());
+                            break;
                         case 'b':
                         case 'f':
                         case 's':
