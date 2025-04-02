@@ -101,7 +101,7 @@ public class Oneal extends Ghost {
         }
     }
 
-    private void checkBombCollision() {
+    public void checkBombCollision() {
         if (!isAlive) return;
 
         int onealTileX = this.x / Sprite.SCALED_SIZE;
@@ -114,8 +114,6 @@ public class Oneal extends Ghost {
             int range = bomb.getBlastRange();
 
             if (bomb.isExploded()) {
-                System.out.println("Checking explosion: Oneal at " + onealTileX + "," + onealTileY +
-                        " | Bomb at " + bombTileX + "," + bombTileY + " | Range: " + range);
                 if (isInBlastRange(onealTileX, onealTileY, bombTileX, bombTileY, range)) {
                     die();
                     break;
@@ -134,7 +132,7 @@ public class Oneal extends Ghost {
         this.img = Sprite.oneal_dead.getFxImage(); // Hiển thị ảnh chết
         System.out.println("💀 Oneal đã chết do dính bom!");
 
-        // Xóa khỏi danh sách sau 0.2 giây
+        // Xóa khỏi danh sách sau 2.5 giây
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

@@ -16,7 +16,6 @@ public class Balloon extends Ghost {
 
     public Balloon(int x, int y, Image img, Bomber bomber) {
         super(x, y, img, bomber.getStillObjects(),bomber.getBombs(),bomber.getEnemies());
-        this.bombs = bombs;
     }
 
     @Override
@@ -88,7 +87,7 @@ public class Balloon extends Ghost {
         checkBombCollision();
     }
 
-    private void checkBombCollision() {
+    public void checkBombCollision() {
         if (!isAlive) return;
 
         int balloonTileX = this.x / Sprite.SCALED_SIZE;
@@ -101,8 +100,6 @@ public class Balloon extends Ghost {
             int range = bomb.getBlastRange();
 
             if (bomb.isExploded()) {
-                System.out.println("Checking explosion: Balloon at " + balloonTileX + "," + balloonTileY +
-                        " | Bomb at " + bombTileX + "," + bombTileY + " | Range: " + range);
                 if (isInBlastRange(balloonTileX, balloonTileY, bombTileX, bombTileY, range)) {
                     die();
                     break;
@@ -112,8 +109,13 @@ public class Balloon extends Ghost {
     }
 
     private boolean isInBlastRange(int x, int y, int bombX, int bombY, int range) {
-        if (x == bombX && Math.abs(y - bombY) <= range) return true;
-        return y == bombY && Math.abs(x - bombX) <= range;
+        for (int i = 0; i <= range; i++) {
+            if ((x == bombX && (y == bombY + i || y == bombY - i)) ||  // Kiểm tra dọc
+                    (y == bombY && (x == bombX + i || x == bombX - i))) {  // Kiểm tra ngang
+                return true;
+            }
+        }
+        return false;
     }
 
     public void die() {
@@ -121,7 +123,7 @@ public class Balloon extends Ghost {
         this.img = Sprite.balloom_dead.getFxImage();
         System.out.println("💀 Balloon đã chết do dính bom!");
 
-        // Xóa khỏi danh sách sau 1 giây
+        // Xóa khỏi danh sách sau 2.5 giây
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

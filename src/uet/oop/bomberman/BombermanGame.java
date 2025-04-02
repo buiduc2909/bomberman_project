@@ -27,6 +27,7 @@ public class BombermanGame extends Application {
         MENU,
         PLAYING,
         SELECTING_LEVEL,
+        ESCAPE_MENU,
         OVER
     }
 
@@ -69,7 +70,7 @@ public class BombermanGame extends Application {
             soundManager.setFilePath("res/sound/01 Title Screen.wav");
             soundManager.play();
         }
-        else if(getCurrentState() == gameState.PLAYING && getCurrentLevel() == 1 ){
+        else if((getCurrentState() == gameState.PLAYING || getCurrentState() == gameState.ESCAPE_MENU) && getCurrentLevel() == 1 ){
             soundManager.setFilePath("res/sound/03 Overworld 1 Field Zone Theme.wav");
             soundManager.play();
         }
@@ -84,7 +85,7 @@ public class BombermanGame extends Application {
     }
 
     public void setCurrentState(gameState state) {
-        if (state == gameState.MENU || state == gameState.SELECTING_LEVEL) {
+        if (state == gameState.MENU || state == gameState.SELECTING_LEVEL || state == gameState.ESCAPE_MENU) {
             previousState = currentState;
         }
         currentState = state;
@@ -254,12 +255,15 @@ public class BombermanGame extends Application {
 
     public void update() {
         if (currentState == gameState.PLAYING) {
+            for (int i = 0; i < stillObjects.size(); i++) {
+                stillObjects.get(i).update();
+            }
             bomber.update();
+            bombs.forEach(Entity::update);
             checkBomberStatus();
             enemies.forEach(Entity::update);
             enemies.removeIf(enemy -> (enemy instanceof Ghost && !((Ghost) enemy).isAlive()));
             items.removeIf(entity -> entity instanceof Item && entity.isPickedUp());
-            bombs.forEach(Entity::update);
             updateCamera();
         }
     }
@@ -302,6 +306,9 @@ public class BombermanGame extends Application {
         }
         else if(currentState == gameState.SELECTING_LEVEL){
             menu.getLevelMenu().render(gc);
+        }
+        else if(currentState == gameState.ESCAPE_MENU){
+            menu.getEscapeMenu().render(gc);
         }
         else if (currentState == gameState.PLAYING) {
             updateCamera();

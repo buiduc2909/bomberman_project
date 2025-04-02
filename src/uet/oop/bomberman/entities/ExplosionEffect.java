@@ -22,10 +22,10 @@ public class ExplosionEffect extends Entity {
 
     public void updateSprite(Image img) {
         setImg(img);
-        System.out.println("🔄 Updating explosion sprite");
+
     }
     @Override
     public void update(){
-        System.out.println("🔄 ExplosionEffect update called for " + x + ", " + y);
+
     }
 }

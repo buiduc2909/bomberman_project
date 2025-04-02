@@ -166,7 +166,7 @@ public class Bomber extends Entity {
                 return;
             }
         }
-
+        System.out.println("bomber blast range: " + explosionRange);
         Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs, explosionRange);
         bombs.add(bomb);
     }
@@ -236,6 +236,7 @@ public class Bomber extends Entity {
         updateImage();
         checkCollisionWithEnemies();
         pickUpItem();
+
     }
 
     public boolean isVisible() {

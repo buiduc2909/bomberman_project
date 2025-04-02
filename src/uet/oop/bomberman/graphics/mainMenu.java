@@ -9,6 +9,7 @@ import uet.oop.bomberman.SoundManager;
 public class mainMenu extends Menu {
     private SelectLevelMenu levelMenu;
     private gameOverMenu gameoverMenu;
+    private EscapeMenu escapeMenu;
 
     public SelectLevelMenu getLevelMenu() {
         return levelMenu;
@@ -26,10 +27,19 @@ public class mainMenu extends Menu {
         this.gameoverMenu = gameoverMenu;
     }
 
+    public EscapeMenu getEscapeMenu() {
+        return escapeMenu;
+    }
+
+    public void setEscapeMenu(EscapeMenu escapeMenu) {
+        this.escapeMenu = escapeMenu;
+    }
+
     public mainMenu(BombermanGame game) {
         super(game, new String[]{"Resume Game", "Start Game", "Select Level", "Exit"});
         levelMenu = new SelectLevelMenu(game);
         gameoverMenu = new gameOverMenu(game);
+        escapeMenu = new EscapeMenu(game);
     }
 
     @Override

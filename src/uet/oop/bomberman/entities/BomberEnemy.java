@@ -1,6 +1,7 @@
 package uet.oop.bomberman.entities;
 
 import javafx.application.Platform;
+import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.graphics.Sprite;
 
 import javafx.scene.image.Image;
@@ -122,7 +123,7 @@ public class BomberEnemy extends Ghost {
         }
     }
 
-    private void checkBombCollision() {
+    public void checkBombCollision() {
         if (!isAlive) return;
 
         int onealTileX = this.x / Sprite.SCALED_SIZE;
@@ -135,8 +136,6 @@ public class BomberEnemy extends Ghost {
             int range = bomb.getBlastRange();
 
             if (bomb.isExploded()) {
-                System.out.println("Checking explosion: Oneal at " + onealTileX + "," + onealTileY +
-                        " | Bomb at " + bombTileX + "," + bombTileY + " | Range: " + range);
                 if (isInBlastRange(onealTileX, onealTileY, bombTileX, bombTileY, range)) {
                     die();
                     break;

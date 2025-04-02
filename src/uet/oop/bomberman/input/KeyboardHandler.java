@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Bomber;
+import uet.oop.bomberman.graphics.EscapeMenu;
 import uet.oop.bomberman.graphics.SelectLevelMenu;
 import uet.oop.bomberman.graphics.gameOverMenu;
 import uet.oop.bomberman.graphics.mainMenu;
@@ -13,6 +14,7 @@ public class KeyboardHandler {
     private final mainMenu menu;
     private final gameOverMenu overMenu;
     private final SelectLevelMenu selectLevelMenu;
+    private final EscapeMenu escapeMenu;
     private final BombermanGame game;
 
     public KeyboardHandler(Scene scene, Bomber bomber, mainMenu menu,BombermanGame game) {
@@ -21,17 +23,21 @@ public class KeyboardHandler {
         this.overMenu = menu.getGameoverMenu();
         this.selectLevelMenu = menu.getLevelMenu();
         this.game = game;
+        this.escapeMenu = menu.getEscapeMenu();
 
         scene.setOnKeyPressed(event -> handleKeyPress(event.getCode()));
         scene.setOnKeyReleased(event -> handleKeyRelease(event.getCode()));
     }
 
     private void handleKeyPress(KeyCode key) {
-        if (BombermanGame.getCurrentState() == BombermanGame.gameState.MENU || BombermanGame.getCurrentState() == BombermanGame.gameState.OVER || BombermanGame.getCurrentState() == BombermanGame.gameState.SELECTING_LEVEL) {
+        if (BombermanGame.getCurrentState() == BombermanGame.gameState.MENU
+                || BombermanGame.getCurrentState() == BombermanGame.gameState.OVER
+                || BombermanGame.getCurrentState() == BombermanGame.gameState.SELECTING_LEVEL
+                || BombermanGame.getCurrentState() == BombermanGame.gameState.ESCAPE_MENU) {
             handleMenuInput(key);
         } else if (BombermanGame.getCurrentState() == BombermanGame.gameState.PLAYING) {
             if(key == KeyCode.ESCAPE) {
-                game.setCurrentState(BombermanGame.gameState.MENU);
+                game.setCurrentState(BombermanGame.gameState.ESCAPE_MENU);
             }
             else {
                 handleGameInput(key);
@@ -86,6 +92,23 @@ public class KeyboardHandler {
                     break;
                 case ENTER:
                     selectLevelMenu.select();
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if(BombermanGame.getCurrentState() == BombermanGame.gameState.ESCAPE_MENU){
+            switch (key) {
+                case W:
+                case UP:
+                    escapeMenu.moveUp();
+                    break;
+                case S:
+                case DOWN:
+                    escapeMenu.moveDown();
+                    break;
+                case ENTER:
+                    escapeMenu.select();
                     break;
                 default:
                     break;

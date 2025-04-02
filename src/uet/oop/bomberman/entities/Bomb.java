@@ -25,7 +25,6 @@ public class Bomb extends Entity {
     };
 
     public List<ExplosionEffect> getExplosionEffects() {
-        System.out.println("📢 Returning explosionEffects size: " + explosionEffects.size());
         return explosionEffects;
     }
 
@@ -40,7 +39,6 @@ public class Bomb extends Entity {
         this.x = x * Sprite.SCALED_SIZE;
         this.y = y * Sprite.SCALED_SIZE;
         this.blastRange = blastRange;
-        System.out.println("🧨 Bomb placed at " + x + ", " + y);
         triggerExplosion();
     }
 
@@ -51,7 +49,6 @@ public class Bomb extends Entity {
             public void run() {
                 Platform.runLater(() -> {
                     exploded = true;
-                    System.out.println("💥 Bomb exploded at " + (x / Sprite.SCALED_SIZE) + ", " + (y / Sprite.SCALED_SIZE));
                     explode();
                 });
             }
@@ -67,19 +64,15 @@ public class Bomb extends Entity {
 
             checkAndReplace(bombX + i, bombY);
             createExplosionEffect(bombX + i, bombY, 1, isLast);
-            System.out.println("💥 Right explosion at (" + (bombX + i) + ", " + bombY + ")");
 
             checkAndReplace(bombX - i, bombY);
             createExplosionEffect(bombX - i, bombY, 0, isLast);
-            System.out.println("💥 Left explosion at (" + (bombX - i) + ", " + bombY + ")");
 
             checkAndReplace(bombX, bombY + i);
             createExplosionEffect(bombX, bombY + i, 3, isLast);
-            System.out.println("💥 Down explosion at (" + bombX + ", " + (bombY + i) + ")");
 
             checkAndReplace(bombX, bombY - i);
             createExplosionEffect(bombX, bombY - i, 2, isLast);
-            System.out.println("💥 Up explosion at (" + bombX + ", " + (bombY - i) + ")");
         }
 
         animateExplosion();
@@ -89,7 +82,6 @@ public class Bomb extends Entity {
                 Platform.runLater(() -> bombs.remove(Bomb.this));
             }
         }, 600);
-        System.out.println("🔥 Explosion animation started");
     }
 
 
@@ -100,7 +92,6 @@ public class Bomb extends Entity {
             int objY = obj.getY() / Sprite.SCALED_SIZE;
 
             if (objX == x && objY == y && obj instanceof Brick) {
-                System.out.println("🧱 Brick destroyed at " + x + ", " + y);
                 ((Brick) obj).explode();
                 final int index = i;
                 new Timer().schedule(new TimerTask() {
@@ -115,7 +106,6 @@ public class Bomb extends Entity {
     }
 
     private void createExplosionEffect(int x, int y, int direction, boolean isLast) {
-        System.out.println("💥 Explosion effect created at " + x + ", " + y);
         Image img = isLast ? explosionSprites[direction][0] : Sprite.explosion_horizontal.getFxImage();
         if (img == null) {
             System.out.println("❌ Explosion sprite is NULL!");
@@ -148,7 +138,6 @@ public class Bomb extends Entity {
                         for (ExplosionEffect explosion : explosionEffects) {
                             explosion.updateSprite(explosionSprites[explosion.getDirection()][explosionIndex]);
                         }
-                        System.out.println("🎞 Explosion animation frame " + explosionIndex);
                         explosionIndex++;
                     } else {
                         for (ExplosionEffect explosion : explosionEffects) {
@@ -156,7 +145,6 @@ public class Bomb extends Entity {
                         }
                         explosionEffects.clear();
                         explosionTimer.cancel();
-                        System.out.println("✅ Explosion animation finished");
                     }
                 });
             }
@@ -168,7 +156,7 @@ public class Bomb extends Entity {
     }
 
     public int getBlastRange() {
-        return 1;
+        return this.blastRange;
     }
 
     @Override
