@@ -233,6 +233,13 @@ public class BombermanGame extends Application {
 
 
     public void setLevel(int level) {
+        // Xoá dữ liệu cũ trước
+        bombs.clear();
+        entities.clear();
+        items.clear();
+        enemies.clear();
+        stillObjects.clear();
+        bomber.resetItemEffects();
         // Tải cấp độ mới dựa trên level
         currentState = gameState.PLAYING;
         // Đảm bảo rằng file của các cấp độ có định dạng phù hợp

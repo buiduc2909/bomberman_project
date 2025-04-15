@@ -3,13 +3,15 @@ package uet.oop.bomberman.entities;
 import javafx.scene.image.Image;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.graphics.SpriteSheet;
 
 import java.util.List;
 
 public class Portal extends Entity {
-    private final List<Entity> enemies; // Danh sách kẻ địch
+    private final List<Entity> enemies;
     private final Bomber bomber;
     private final BombermanGame game;
+    private boolean isOpened = false;
 
     public Portal(int x, int y, Image img, List<Entity> enemies, Bomber bomber, BombermanGame game) {
         super(x, y, img);
@@ -20,8 +22,15 @@ public class Portal extends Entity {
 
     @Override
     public void update() {
-        if (enemies.isEmpty() && isCollidingWithBomber()) {
-            game.setLevel(game.getCurrentLevel() + 1); // Tăng cấp độ khi qua Portal
+        // Khi không còn kẻ địch và portal chưa mở thì đổi hình ảnh
+        if (!isOpened && enemies.isEmpty()) {
+            Image openedImg = new Sprite(Sprite.DEFAULT_SIZE, 4, 1, SpriteSheet.tiles, 14, 14).getFxImage();
+            setImg(openedImg);
+            isOpened = true;
+        }
+
+        if (isOpened && isCollidingWithBomber()) {
+            game.setLevel(game.getCurrentLevel() + 1);
         }
     }
 

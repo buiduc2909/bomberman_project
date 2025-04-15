@@ -358,4 +358,11 @@ public class Bomber extends Entity {
         return explosionRange;
     }
 
+    public void resetItemEffects() {
+        this.bombLimit = 1;
+        this.speed = 0.25;
+        this.explosionRange = 1;
+        System.out.println("Bomber item effects reset.");
+    }
+
 }
