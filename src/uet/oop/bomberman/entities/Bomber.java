@@ -167,7 +167,7 @@ public class Bomber extends Entity {
             }
         }
         System.out.println("bomber blast range: " + explosionRange);
-        Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs, explosionRange);
+        Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs, explosionRange, this);
         bombs.add(bomb);
     }
 

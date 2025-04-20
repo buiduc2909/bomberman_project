@@ -180,7 +180,7 @@ public class BomberEnemy extends Ghost {
             }
         }
 
-        Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs, explosionRange);
+        Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs, explosionRange, this);
         bombs.add(bomb);
          // Đặt lại thời gian hồi
     }

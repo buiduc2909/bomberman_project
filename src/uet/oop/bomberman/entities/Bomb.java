@@ -16,6 +16,7 @@ public class Bomb extends Entity {
     private int explosionIndex = 0;
     private List<ExplosionEffect> explosionEffects = new ArrayList<>();
     private final int blastRange;
+    private Entity owner;
 
     private final Image[][] explosionSprites = {
             {Sprite.explosion_horizontal_left_last.getFxImage(), Sprite.explosion_horizontal_left_last1.getFxImage(), Sprite.explosion_horizontal_left_last2.getFxImage()},
@@ -32,13 +33,14 @@ public class Bomb extends Entity {
         this.explosionEffects = explosionEffects;
     }
 
-    public Bomb(int x, int y, List<Entity> stillObjects, List<Entity> bombs, int blastRange) {
+    public Bomb(int x, int y, List<Entity> stillObjects, List<Entity> bombs, int blastRange, Entity owner) {
         super(x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE, Sprite.bomb.getFxImage());
         this.stillObjects = stillObjects;
         this.bombs = bombs;
         this.x = x * Sprite.SCALED_SIZE;
         this.y = y * Sprite.SCALED_SIZE;
         this.blastRange = blastRange;
+        this.owner = owner;
         triggerExplosion();
     }
 
