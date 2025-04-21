@@ -14,7 +14,8 @@ public class Portal extends Entity {
     private boolean isOpened = false;
 
     public Portal(int x, int y, Image img, List<Entity> enemies, Bomber bomber, BombermanGame game) {
-        super(x, y, img);
+        super(x, y);
+        this.img = img;
         this.enemies = enemies;
         this.bomber = bomber;
         this.game = game;

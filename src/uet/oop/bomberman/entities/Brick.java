@@ -12,7 +12,8 @@ public class Brick extends Entity {
     private final Timer timer = new Timer();
 
     public Brick(int x, int y, Image img) {
-        super(x, y, img);
+        super(x, y);
+        this.img = img;
     }
 
     public void explode() {

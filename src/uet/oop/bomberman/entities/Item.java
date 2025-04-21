@@ -14,7 +14,8 @@ public abstract class Item extends Entity {
     private int id;
     private static int idCounter;
     public Item(int xUnit, int yUnit, Image img, List<Entity> stillObjects) {
-        super(xUnit, yUnit, img);
+        super(xUnit, yUnit);
+        this.img = img;
         this.stillObjects = stillObjects;
         this.id = idCounter++;
     }

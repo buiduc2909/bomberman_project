@@ -64,7 +64,8 @@ public class Bomber extends Entity {
     }
 
     public Bomber(int x, int y, Image img, List<Entity> stillObjects, List<Entity> bombs, List<Entity> enemies, List<Item> items) {
-        super(x, y, img);
+        super(x, y);
+        this.img = img;
         this.stillObjects = stillObjects;
         this.enemies = enemies;
         this.items = items;
@@ -167,7 +168,7 @@ public class Bomber extends Entity {
             }
         }
         System.out.println("bomber blast range: " + explosionRange);
-        Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs, explosionRange, this);
+        Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs, explosionRange, false);
         bombs.add(bomb);
     }
 

@@ -24,9 +24,9 @@ public class BomberEnemy extends Ghost {
 
     // 🧨 Biến liên quan đến đặt bom
     private List<Entity> bombs;
-    private int maxBombs = 100; // Số bom tối đa có thể đặt
-    private int explosionRange = 1; // Tầm nổ của bom
-    private int bombCooldown = 120; // Thời gian hồi bom
+    private int bombLimit = 1;  // Số bom tối đa có thể đặt
+    private int explosionRange = 5; // Tầm nổ của bom
+    private int bombCooldown = 3000; // Thời gian hồi bom
     private int bombTimer = 0; // Đếm ngược thời gian hồi
 
     public BomberEnemy(int x, int y, Image img, int mapWidth, int mapHeight, Bomber bomber, List<Entity> stillObjects, List<Entity> bombs) {
@@ -36,7 +36,7 @@ public class BomberEnemy extends Ghost {
         this.bomber = bomber;
         this.lastMoveTime = System.currentTimeMillis();
         this.isAlive = true;
-        this.bombs = new ArrayList<>();
+        this.bombs = bombs;
     }
 
     private long randomDelay(){
@@ -73,7 +73,7 @@ public class BomberEnemy extends Ghost {
             int nextTileY = nextStep[1];
 
             if (!isValid(nextTileX, nextTileY)) {
-                System.out.println("🚫 Oneal gặp vật cản và không thể di chuyển tiếp.");
+                System.out.println("🚫 BomberEnemy gặp vật cản và không thể di chuyển tiếp.");
                 return;
             }
 
@@ -89,7 +89,7 @@ public class BomberEnemy extends Ghost {
     // Tách riêng phương thức update để kiểm tra bom
     public void update() {
         if (!isAlive) {
-            this.img = Sprite.oneal_dead.getFxImage();
+            this.img = Sprite.bomberenemy_dead.getFxImage();
         }
         move(); // Di chuyển
         animate();//vẽ hoạt ảnh
@@ -113,21 +113,21 @@ public class BomberEnemy extends Ghost {
         animationStep = (animationStep + 1) % 3; // Có 3 khung hình cho mỗi hướng
 
         if (movingLeft) {
-            if (animationStep == 0) this.img = Sprite.oneal_left1.getFxImage();
-            else if (animationStep == 1) this.img = Sprite.oneal_left2.getFxImage();
-            else this.img = Sprite.oneal_left3.getFxImage();
+            if (animationStep == 0) this.img = Sprite.bomberenemy_left1.getFxImage();
+            else if (animationStep == 1) this.img = Sprite.bomberenemy_left2.getFxImage();
+            else this.img = Sprite.bomberenemy_left3.getFxImage();
         } else {
-            if (animationStep == 0) this.img = Sprite.oneal_right1.getFxImage();
-            else if (animationStep == 1) this.img = Sprite.oneal_right2.getFxImage();
-            else this.img = Sprite.oneal_right3.getFxImage();
+            if (animationStep == 0) this.img = Sprite.bomberenemy_right1.getFxImage();
+            else if (animationStep == 1) this.img = Sprite.bomberenemy_right2.getFxImage();
+            else this.img = Sprite.bomberenemy_right3.getFxImage();
         }
     }
 
     public void checkBombCollision() {
         if (!isAlive) return;
 
-        int onealTileX = this.x / Sprite.SCALED_SIZE;
-        int onealTileY = this.y / Sprite.SCALED_SIZE;
+        int bomberenemyTileX = this.x / Sprite.SCALED_SIZE;
+        int bomberenemyTileY = this.y / Sprite.SCALED_SIZE;
 
         for (Entity entity : bombs) {
             Bomb bomb = (Bomb) entity;
@@ -135,8 +135,8 @@ public class BomberEnemy extends Ghost {
             int bombTileY = bomb.getY() / Sprite.SCALED_SIZE;
             int range = bomb.getBlastRange();
 
-            if (bomb.isExploded()) {
-                if (isInBlastRange(onealTileX, onealTileY, bombTileX, bombTileY, range)) {
+            if (bomb.isExploded() && bomb.isEnemyBomb()) {
+                if (isInBlastRange(bomberenemyTileX, bomberenemyTileY, bombTileX, bombTileY, range)) {
                     die();
                     break;
                 }
@@ -151,8 +151,8 @@ public class BomberEnemy extends Ghost {
 
     public void die() {
         this.isAlive = false;
-        this.img = Sprite.oneal_dead.getFxImage(); // Hiển thị ảnh chết
-        System.out.println("💀 Oneal đã chết do dính bom!");
+        this.img = Sprite.bomberenemy_dead.getFxImage(); // Hiển thị ảnh chết
+        System.out.println("💀 BomberEnemy đã chết do dính bom!");
 
         // Xóa khỏi danh sách sau 0.2 giây
         new Timer().schedule(new TimerTask() {
@@ -165,7 +165,7 @@ public class BomberEnemy extends Ghost {
 
     // 🧨 Kiểm tra xem có thể đặt bom không
     private boolean shouldPlaceBomb() {
-        return bombs.size() < maxBombs && bombTimer == 0 && Math.random() < 0.05;
+        return bombs.size() < bombLimit && bombTimer == 0 && Math.random() < 0.05;
     }
 
     // 🧨 Phương thức đặt bom
@@ -180,7 +180,7 @@ public class BomberEnemy extends Ghost {
             }
         }
 
-        Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs, explosionRange, this);
+        Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs, explosionRange, true);
         bombs.add(bomb);
          // Đặt lại thời gian hồi
     }

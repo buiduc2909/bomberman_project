@@ -16,10 +16,11 @@ public abstract class Ghost extends Entity {
     protected List<Entity> enemies;
 
     public Ghost(int x, int y, Image img, List<Entity> stillObjects, List<Entity> bombs, List<Entity> enemies) {
-        super(x, y, img);
+        super(x, y);
         this.stillObjects = stillObjects;
         this.bombs = bombs;
         this.enemies = enemies;
+        this.img = img;
     }
 
 

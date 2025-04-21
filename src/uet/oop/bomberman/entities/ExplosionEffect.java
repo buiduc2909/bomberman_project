@@ -12,8 +12,9 @@ public class ExplosionEffect extends Entity {
     private final int direction;
 
     public ExplosionEffect(int x, int y, Image img, int direction) {
-        super(x , y, img);
+        super(x , y);
         this.direction = direction;
+        this.img = img;
     }
 
     public int getDirection() {
