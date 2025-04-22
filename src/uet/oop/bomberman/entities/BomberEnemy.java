@@ -23,20 +23,20 @@ public class BomberEnemy extends Ghost {
     private boolean movingLeft = true; // Xác định hướng di chuyển
 
     // 🧨 Biến liên quan đến đặt bom
-    private List<Entity> bombs;
-    private int bombLimit = 1;  // Số bom tối đa có thể đặt
+    private List<Entity> ebombs;
+    private int ebombLimit = 1;  // Số bom tối đa có thể đặt
     private int explosionRange = 5; // Tầm nổ của bom
     private int bombCooldown = 3000; // Thời gian hồi bom
     private int bombTimer = 0; // Đếm ngược thời gian hồi
 
-    public BomberEnemy(int x, int y, Image img, int mapWidth, int mapHeight, Bomber bomber, List<Entity> stillObjects, List<Entity> bombs) {
+    public BomberEnemy(int x, int y, Image img, int mapWidth, int mapHeight, Bomber bomber, List<Entity> stillObjects, List<Entity> ebombs) {
         super(x, y, img, bomber.getStillObjects(),bomber.getBombs(),bomber.getEnemies());
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.bomber = bomber;
         this.lastMoveTime = System.currentTimeMillis();
         this.isAlive = true;
-        this.bombs = bombs;
+        this.ebombs = ebombs;
     }
 
     private long randomDelay(){
@@ -101,8 +101,8 @@ public class BomberEnemy extends Ghost {
         }
 
         // 🧨 Xác suất đặt bom khi đủ điều kiện
-        if (shouldPlaceBomb()) {
-            placeBomb();
+        if (shouldPlaceEBomb()) {
+            placeEBomb();
         }
 
         // Xóa các quả bom đã nổ
@@ -135,7 +135,7 @@ public class BomberEnemy extends Ghost {
             int bombTileY = bomb.getY() / Sprite.SCALED_SIZE;
             int range = bomb.getBlastRange();
 
-            if (bomb.isExploded() && bomb.isEnemyBomb()) {
+            if (bomb.isExploded()) {
                 if (isInBlastRange(bomberenemyTileX, bomberenemyTileY, bombTileX, bombTileY, range)) {
                     die();
                     break;
@@ -164,24 +164,24 @@ public class BomberEnemy extends Ghost {
     }
 
     // 🧨 Kiểm tra xem có thể đặt bom không
-    private boolean shouldPlaceBomb() {
-        return bombs.size() < bombLimit && bombTimer == 0 && Math.random() < 0.05;
+    private boolean shouldPlaceEBomb() {
+        return ebombs.size() < ebombLimit;
     }
 
     // 🧨 Phương thức đặt bom
-    private void placeBomb() {
-        int bombX = this.x / Sprite.SCALED_SIZE;
-        int bombY = this.y / Sprite.SCALED_SIZE;
+    private void placeEBomb() {
+        int ebombX = this.x / Sprite.SCALED_SIZE;
+        int ebombY = this.y / Sprite.SCALED_SIZE;
 
         // Kiểm tra xem có bom nào đã có ở vị trí này không
-        for (Entity bomb : bombs) {
-            if (bomb.getX() / Sprite.SCALED_SIZE == bombX && bomb.getY() / Sprite.SCALED_SIZE == bombY) {
+        for (Entity bomb : ebombs) {
+            if (bomb.getX() / Sprite.SCALED_SIZE == ebombX && bomb.getY() / Sprite.SCALED_SIZE == ebombY) {
                 return;
             }
         }
-
-        Bomb bomb = new Bomb(bombX, bombY, stillObjects, bombs, explosionRange, true);
-        bombs.add(bomb);
+        System.out.println("ebomber blast range: " + explosionRange);
+        Bomb ebomb = new Bomb(ebombX, ebombY, stillObjects, ebombs, explosionRange, true);
+        ebombs.add(ebomb);
          // Đặt lại thời gian hồi
     }
 

@@ -51,6 +51,7 @@ public class BombermanGame extends Application {
     private Canvas canvas;
     private final List<Entity> entities = new ArrayList<>();
     private final List<Entity> bombs = new ArrayList<>();
+    private final List<Entity> ebombs = new ArrayList<>();
     private final List<Entity> stillObjects = new ArrayList<>();
     private final List<Entity> enemies = new ArrayList<>();
     private final List<Item> items = new ArrayList<>();
@@ -98,6 +99,7 @@ public class BombermanGame extends Application {
 
         //clear old data
         bombs.clear();
+        ebombs.clear();
         entities.clear();
         items.clear();
         enemies.clear();
@@ -202,7 +204,7 @@ public class BombermanGame extends Application {
                             object = new Grass(i, j, Sprite.grass.getFxImage());
                             break;
                         case '3':
-                            object = new BomberEnemy(i, j, Sprite.oneal_left1.getFxImage(), mapWidth, mapHeight, bomber, stillObjects, bombs);
+                            object = new BomberEnemy(i, j, Sprite.oneal_left1.getFxImage(), mapWidth, mapHeight, bomber, stillObjects, ebombs);
                             enemies.add(object);
                             object = new Grass(i, j, Sprite.grass.getFxImage());
                             break;
@@ -235,6 +237,7 @@ public class BombermanGame extends Application {
     public void setLevel(int level) {
         // Xoá dữ liệu cũ trước
         bombs.clear();
+        ebombs.clear();
         entities.clear();
         items.clear();
         enemies.clear();
@@ -267,6 +270,7 @@ public class BombermanGame extends Application {
             }
             bomber.update();
             bombs.forEach(Entity::update);
+            ebombs.forEach(Entity::update);
             checkBomberStatus();
             enemies.forEach(Entity::update);
             enemies.removeIf(enemy -> (enemy instanceof Ghost && !((Ghost) enemy).isAlive()));
@@ -346,6 +350,16 @@ public class BombermanGame extends Application {
                 }
             }
 
+            for (Entity bomb : ebombs) {
+                if (isInCamera(bomb)) {
+                    bomb.render(gc);
+                    for (ExplosionEffect explosion : ((Bomb)bomb).getExplosionEffects()) {
+                        if (isInCamera(explosion)) {
+                            explosion.render(gc);
+                        }
+                    }
+                }
+            }
             for (Item item : items) {
                 if (isInCamera(item)) {
                     item.render(gc);
