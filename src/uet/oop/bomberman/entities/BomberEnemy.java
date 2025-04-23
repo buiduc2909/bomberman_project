@@ -182,7 +182,9 @@ public class BomberEnemy extends Ghost {
         System.out.println("ebomber blast range: " + explosionRange);
         Bomb ebomb = new Bomb(ebombX, ebombY, stillObjects, ebombs, explosionRange, true);
         ebombs.add(ebomb);
-         // Đặt lại thời gian hồi
+        boolean isEnemyBomb = ebomb.isEnemyBomb();
+        System.out.println("isEnemyBomb = " + isEnemyBomb);
+        // Đặt lại thời gian hồi
     }
 
     private List<int[]> findPathToTarget() {

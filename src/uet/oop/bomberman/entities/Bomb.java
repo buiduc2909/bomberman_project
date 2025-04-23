@@ -2,6 +2,9 @@ package uet.oop.bomberman.entities;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
+import uet.oop.bomberman.BombermanGame;
+import uet.oop.bomberman.SFXManager;
+import uet.oop.bomberman.SoundManager;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.graphics.Sprite;
 import java.util.ArrayList;
@@ -49,11 +52,15 @@ public class Bomb extends Entity {
         this.x = x * Sprite.SCALED_SIZE;
         this.y = y * Sprite.SCALED_SIZE;
         this.blastRange = blastRange;
-        triggerExplosion();
+        if (isEnemyBomb) {
+            triggerExplosionEnemyBomb();
+        }else {
+            triggerExplosionBomb();
+        }
     }
 
 
-    private void triggerExplosion() {
+    private void triggerExplosionBomb() {
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -61,6 +68,25 @@ public class Bomb extends Entity {
                 Platform.runLater(() -> {
                     exploded = true;
                     explode();
+                    if(BombermanGame.getCurrentState() == BombermanGame.gameState.PLAYING){
+                        SFXManager.playSound("res/sound/Bomb Explosion.wav");
+                    }
+                });
+            }
+        }, 2000);
+    }
+
+    private void triggerExplosionEnemyBomb() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    exploded = true;
+                    explode();
+                    if(BombermanGame.getCurrentState() == BombermanGame.gameState.PLAYING){
+                        SFXManager.playSound("res/sound/eBomb Explosion.wav");
+                    }
                 });
             }
         }, 2000);
