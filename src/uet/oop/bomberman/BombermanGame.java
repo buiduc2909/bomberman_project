@@ -309,7 +309,10 @@ public class BombermanGame extends Application {
     public void render() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.save();
-        gc.translate(-cameraX, -cameraY);  // Di chuyển camera trước khi vẽ
+        if (currentState == gameState.PLAYING) {
+            gc.translate(-cameraX, -cameraY);// Di chuyển camera trước khi vẽ
+        }
+        //gc.translate(-cameraX, -cameraY);
 
         if (currentState == gameState.MENU) {
             gc.restore();

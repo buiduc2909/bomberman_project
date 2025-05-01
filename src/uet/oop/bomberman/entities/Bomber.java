@@ -203,6 +203,33 @@ public class Bomber extends Entity {
         }
     }
 
+    public void checkHitByEnemyBombs(List<Entity> ebombs) {
+        if (dead) return;
+
+        int bomberTileX = this.x / Sprite.SCALED_SIZE;
+        int bomberTileY = this.y / Sprite.SCALED_SIZE;
+
+        for (Entity entity : ebombs) {
+            Bomb bomb = (Bomb) entity;
+            if (!bomb.isExploded()) continue;
+
+            int bombTileX = bomb.getX() / Sprite.SCALED_SIZE;
+            int bombTileY = bomb.getY() / Sprite.SCALED_SIZE;
+            int range = bomb.getBlastRange();
+
+            if (isInBlastRange(bomberTileX, bomberTileY, bombTileX, bombTileY, range)) {
+                takeDamage();
+                System.out.println("💣 Bomber bị dính bom của enemy");
+                break;
+            }
+        }
+    }
+
+    private boolean isInBlastRange(int x, int y, int bombX, int bombY, int range) {
+        if (x == bombX && Math.abs(y - bombY) <= range) return true;
+        return y == bombY && Math.abs(x - bombX) <= range;
+    }
+
     public void die() {
         System.out.println("Bomber has died!");
         dead = true;
@@ -231,6 +258,13 @@ public class Bomber extends Entity {
         else if(elapsedTime >= 1000) {
             invincible = false;
             isVisible = true;
+        }
+        // Giả sử bạn có danh sách enemies
+        for (Entity enemy : enemies) {
+            if (enemy instanceof BomberEnemy) {
+                BomberEnemy be = (BomberEnemy) enemy;
+                this.checkHitByEnemyBombs(be.getEbombs());  // <-- Kiểm tra va chạm với bom enemy
+            }
         }
 
         move();// Di chuyển nhân vật nếu có phím nhấn

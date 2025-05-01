@@ -38,6 +38,9 @@ public class BomberEnemy extends Ghost {
         this.isAlive = true;
         this.ebombs = ebombs;
     }
+    public List<Entity> getEbombs() {
+        return ebombs;
+    }
 
     private long randomDelay(){
         return MIN_DELAY + new Random().nextInt((int) (MAX_DELAY - MIN_DELAY + 1));
