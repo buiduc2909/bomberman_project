@@ -8,7 +8,7 @@ import uet.oop.bomberman.BombermanGame;
 public class SelectLevelMenu extends Menu {
 
     public SelectLevelMenu(BombermanGame game) {
-        super(game, new String[]{"Level 1", "Level 2", "Level 3"});
+        super(game, new String[]{"Level 1", "Level 2", "Level 3","Back"});
     }
 
     @Override
@@ -34,14 +34,19 @@ public class SelectLevelMenu extends Menu {
         switch (selectedOption) {
             case 0:
                 game.setLevel(1);
+                game.setCurrentState(BombermanGame.gameState.PLAYING);
                 break;
             case 1:
                 game.setLevel(2);
+                game.setCurrentState(BombermanGame.gameState.PLAYING);
                 break;
             case 2:
                 game.setLevel(3);
+                game.setCurrentState(BombermanGame.gameState.PLAYING);
+                break;
+            case 3:
+                game.setCurrentState(BombermanGame.gameState.MENU);
                 break;
         }
-        game.setCurrentState(BombermanGame.gameState.PLAYING);
     }
 }

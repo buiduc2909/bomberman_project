@@ -155,7 +155,8 @@ public class Bomber extends Entity {
                 double entityRight = entity.getX() + Sprite.SCALED_SIZE;
                 double entityTop = entity.getY();
                 double entityBottom = entity.getY() + Sprite.SCALED_SIZE;
-                if (centerX > entityLeft && centerX < entityRight && centerY > entityTop && centerY < entityBottom) {
+                if (centerX > entityLeft && centerX < entityRight
+                        && centerY > entityTop && centerY < entityBottom) {
                     return false;
                 }
             }
