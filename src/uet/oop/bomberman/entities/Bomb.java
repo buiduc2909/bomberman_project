@@ -96,20 +96,40 @@ public class Bomb extends Entity {
         int bombX = this.x / Sprite.SCALED_SIZE;
         int bombY = this.y / Sprite.SCALED_SIZE;
 
+        // Hướng phải
         for (int i = 1; i <= blastRange; i++) {
-            boolean isLast = (i == blastRange);
+            int x1 = bombX + i;
+            int y1 = bombY;
+            if (isBlockedByWall(x1, y1)) break;
+            checkAndReplace(x1, y1); // phá Brick nếu có
+            createExplosionEffect(x1, y1, 1, i == blastRange);
+        }
 
-            checkAndReplace(bombX + i, bombY);
-            createExplosionEffect(bombX + i, bombY, 1, isLast);
+        // Hướng trái
+        for (int i = 1; i <= blastRange; i++) {
+            int x1 = bombX - i;
+            int y1 = bombY;
+            if (isBlockedByWall(x1, y1)) break;
+            checkAndReplace(x1, y1);
+            createExplosionEffect(x1, y1, 0, i == blastRange);
+        }
 
-            checkAndReplace(bombX - i, bombY);
-            createExplosionEffect(bombX - i, bombY, 0, isLast);
+        // Hướng xuống
+        for (int i = 1; i <= blastRange; i++) {
+            int x1 = bombX;
+            int y1 = bombY + i;
+            if (isBlockedByWall(x1, y1)) break;
+            checkAndReplace(x1, y1);
+            createExplosionEffect(x1, y1, 3, i == blastRange);
+        }
 
-            checkAndReplace(bombX, bombY + i);
-            createExplosionEffect(bombX, bombY + i, 3, isLast);
-
-            checkAndReplace(bombX, bombY - i);
-            createExplosionEffect(bombX, bombY - i, 2, isLast);
+        // Hướng lên
+        for (int i = 1; i <= blastRange; i++) {
+            int x1 = bombX;
+            int y1 = bombY - i;
+            if (isBlockedByWall(x1, y1)) break;
+            checkAndReplace(x1, y1);
+            createExplosionEffect(x1, y1, 2, i == blastRange);
         }
 
         animateExplosion();
@@ -186,6 +206,17 @@ public class Bomb extends Entity {
                 });
             }
         }, 0, 100);
+    }
+    private boolean isBlockedByWall(int x, int y) {
+        for (Entity obj : stillObjects) {
+            int objX = obj.getX() / Sprite.SCALED_SIZE;
+            int objY = obj.getY() / Sprite.SCALED_SIZE;
+
+            if (objX == x && objY == y && obj instanceof Wall) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isExploded() {

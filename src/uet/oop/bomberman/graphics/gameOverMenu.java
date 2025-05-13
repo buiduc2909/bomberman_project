@@ -1,6 +1,7 @@
 package uet.oop.bomberman.graphics;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import uet.oop.bomberman.BombermanGame;
@@ -10,8 +11,16 @@ public class gameOverMenu extends Menu {
     private double fadeOpacity = 0.0; // Khởi tạo với 0
 
     public gameOverMenu(BombermanGame game) {
-        super(game, new String[]{"Retry", "Main Menu"}); // Các tùy chọn menu
+        super(game, new String[]{"Retry", "Main Menu"}); // Gọi constructor cha
+
+        try {
+            String path = getClass().getResource("/textures/game_over.png").toExternalForm();
+            background = new Image(path);  // Tải ảnh nền riêng cho Game Over
+        } catch (Exception e) {
+            System.out.println("Lỗi tải ảnh nền Game Over: " + e.getMessage());
+        }
     }
+
 
     @Override
     public void render(GraphicsContext gc) {

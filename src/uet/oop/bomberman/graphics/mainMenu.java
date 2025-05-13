@@ -81,9 +81,11 @@ public class mainMenu extends Menu {
                 }
                 break;
             case 1:
+                game.reset();
                 game.setCurrentState(BombermanGame.gameState.PLAYING);
                 break;
             case 2:
+                game.reset();
                 game.setCurrentState(BombermanGame.gameState.SELECTING_LEVEL);
                 break;
             case 3:
