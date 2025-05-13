@@ -11,7 +11,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import uet.oop.bomberman.entities.*;
-import uet.oop.bomberman.entities.items.Bombitem;
+import uet.oop.bomberman.entities.Bombitem;
 import uet.oop.bomberman.graphics.*;
 import uet.oop.bomberman.input.KeyboardHandler;
 
@@ -72,6 +72,14 @@ public class BombermanGame extends Application {
             soundManager.play();
         }
         else if((getCurrentState() == gameState.PLAYING || getCurrentState() == gameState.ESCAPE_MENU) && getCurrentLevel() == 1 ){
+            soundManager.setFilePath("res/sound/03 Overworld 1 Field Zone Theme.wav");
+            soundManager.play();
+        }
+        else if((getCurrentState() == gameState.PLAYING || getCurrentState() == gameState.ESCAPE_MENU) && getCurrentLevel() == 2 ){
+            soundManager.setFilePath("res/sound/03 Overworld 1 Field Zone Theme.wav");
+            soundManager.play();
+        }
+        else if((getCurrentState() == gameState.PLAYING || getCurrentState() == gameState.ESCAPE_MENU) && getCurrentLevel() == 3 ){
             soundManager.setFilePath("res/sound/03 Overworld 1 Field Zone Theme.wav");
             soundManager.play();
         }
