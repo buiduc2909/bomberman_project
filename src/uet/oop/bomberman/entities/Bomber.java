@@ -26,6 +26,7 @@ public class Bomber extends Entity {
     private long invincibleStartTime = 0;
     private long lastMoveTime = 0;
     private final long MOVE_DELAY = 100; // Độ trễ giữa các bước di chuyển (milliseconds)
+    private Direction currentDirection = Direction.NONE;
 
     public void setExplosionRange(int explosionRange) {
         this.explosionRange = explosionRange;
@@ -83,6 +84,10 @@ public class Bomber extends Entity {
         this.y = y;
     }
 
+    public enum Direction {
+        UP, DOWN, LEFT, RIGHT, NONE
+    }
+
     public void moveUp() {
         if (!dead && System.currentTimeMillis() - lastMoveTime >= MOVE_DELAY) {
             int newY = y - Sprite.SCALED_SIZE;
@@ -91,6 +96,7 @@ public class Bomber extends Entity {
                 movingDown = movingLeft = movingRight = false;
                 y = newY;
                 lastMoveTime = System.currentTimeMillis(); // Cập nhật thời gian di chuyển
+                currentDirection = Direction.UP;
             }
         }
     }
@@ -103,6 +109,7 @@ public class Bomber extends Entity {
                 movingUp = movingLeft = movingRight = false;
                 y = newY;
                 lastMoveTime = System.currentTimeMillis();
+                currentDirection = Direction.DOWN;
             }
         }
     }
@@ -115,6 +122,7 @@ public class Bomber extends Entity {
                 movingUp = movingDown = movingRight = false;
                 x = newX;
                 lastMoveTime = System.currentTimeMillis();
+                currentDirection = Direction.LEFT;
             }
         }
     }
@@ -127,12 +135,14 @@ public class Bomber extends Entity {
                 movingUp = movingDown = movingLeft = false;
                 x = newX;
                 lastMoveTime = System.currentTimeMillis();
+                currentDirection = Direction.RIGHT;
             }
         }
     }
 
     public void stopMove() {
         movingUp = movingDown = movingLeft = movingRight = false;
+        currentDirection = Direction.NONE;
         lastMoveTime = 0;
     }
 
@@ -145,7 +155,8 @@ public class Bomber extends Entity {
                 double entityRight = entity.getX() + Sprite.SCALED_SIZE;
                 double entityTop = entity.getY();
                 double entityBottom = entity.getY() + Sprite.SCALED_SIZE;
-                if (centerX > entityLeft && centerX < entityRight && centerY > entityTop && centerY < entityBottom) {
+                if (centerX > entityLeft && centerX < entityRight
+                        && centerY > entityTop && centerY < entityBottom) {
                     return false;
                 }
             }
@@ -268,7 +279,9 @@ public class Bomber extends Entity {
         }
 
         move();// Di chuyển nhân vật nếu có phím nhấn
-        updateImage();
+        if (currentDirection != Direction.NONE) {
+            updateImage();
+        }
         checkCollisionWithEnemies();
         pickUpItem();
 
@@ -287,33 +300,38 @@ public class Bomber extends Entity {
         if (frameCounter < frameDelay) return;
         frameCounter = 0; // Reset bộ đếm khi đổi ảnh
 
-        if (movingUp) {
-            animationStep = (animationStep + 1) % 3;
-            img = (animationStep == 0) ? Sprite.player_up.getFxImage() :
-                    (animationStep == 1) ? Sprite.player_up_1.getFxImage() :
-                            Sprite.player_up_2.getFxImage();
-        } else if (movingDown) {
-            animationStep = (animationStep + 1) % 3;
-            img = (animationStep == 0) ? Sprite.player_down.getFxImage() :
-                    (animationStep == 1) ? Sprite.player_down_1.getFxImage() :
-                            Sprite.player_down_2.getFxImage();
-        } else if (movingLeft) {
-            animationStep = (animationStep + 1) % 3;
-            img = (animationStep == 0) ? Sprite.player_left.getFxImage() :
-                    (animationStep == 1) ? Sprite.player_left_1.getFxImage() :
-                            Sprite.player_left_2.getFxImage();
-        } else if (movingRight) {
-            animationStep = (animationStep + 1) % 3;
-            img = (animationStep == 0) ? Sprite.player_right.getFxImage() :
-                    (animationStep == 1) ? Sprite.player_right_1.getFxImage() :
-                            Sprite.player_right_2.getFxImage();
+        animationStep = (animationStep + 1) % 3;
+
+        switch (currentDirection) {
+            case UP:
+                img = (animationStep == 0) ? Sprite.player_up.getFxImage() :
+                        (animationStep == 1) ? Sprite.player_up_1.getFxImage() :
+                                Sprite.player_up_2.getFxImage();
+                break;
+            case DOWN:
+                img = (animationStep == 0) ? Sprite.player_down.getFxImage() :
+                        (animationStep == 1) ? Sprite.player_down_1.getFxImage() :
+                                Sprite.player_down_2.getFxImage();
+                break;
+            case LEFT:
+                img = (animationStep == 0) ? Sprite.player_left.getFxImage() :
+                        (animationStep == 1) ? Sprite.player_left_1.getFxImage() :
+                                Sprite.player_left_2.getFxImage();
+                break;
+            case RIGHT:
+                img = (animationStep == 0) ? Sprite.player_right.getFxImage() :
+                        (animationStep == 1) ? Sprite.player_right_1.getFxImage() :
+                                Sprite.player_right_2.getFxImage();
+                break;
+            default:
+                break;
         }
     }
 
 
     private void move() {
         moveCounter++;
-        if (frameCounter < moveDelay) return; // Chỉ cập nhật khi đủ delay
+        if (moveCounter < moveDelay) return; // Chỉ cập nhật khi đủ delay
         moveCounter = 0; // Reset bộ đếm
 
         int newX = x;

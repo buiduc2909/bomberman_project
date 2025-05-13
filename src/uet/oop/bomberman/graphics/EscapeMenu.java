@@ -8,7 +8,7 @@ import uet.oop.bomberman.BombermanGame;
 public class EscapeMenu extends Menu{
 
     public EscapeMenu(BombermanGame game) {
-        super(game, new String[]{"Resume Game", "Restart Game", "Exit"});
+        super(game, new String[]{"Resume Game", "Restart Game", "Back to menu", "Exit"});
     }
 
     @Override
@@ -46,6 +46,9 @@ public class EscapeMenu extends Menu{
                 game.restartGame();
                 break;
             case 2:
+                game.setCurrentState(BombermanGame.gameState.MENU);
+                break;
+            case 3:
                 System.exit(0);
                 break;
         }

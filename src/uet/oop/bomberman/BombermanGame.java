@@ -71,7 +71,9 @@ public class BombermanGame extends Application {
             soundManager.setFilePath("res/sound/01 Title Screen.wav");
             soundManager.play();
         }
-        else if((getCurrentState() == gameState.PLAYING || getCurrentState() == gameState.ESCAPE_MENU) && getCurrentLevel() == 1 ){
+        else if((getCurrentState() == gameState.PLAYING
+                || getCurrentState() == gameState.ESCAPE_MENU)
+                && getCurrentLevel() == 1 ){
             soundManager.setFilePath("res/sound/03 Overworld 1 Field Zone Theme.wav");
             soundManager.play();
         }
@@ -123,11 +125,11 @@ public class BombermanGame extends Application {
     }
 
     public boolean canResume() {
-        return previousState == gameState.PLAYING;
+        return previousState == gameState.PLAYING || previousState == gameState.ESCAPE_MENU;
     }
 
     public void resumeGame() {
-        if (previousState == gameState.PLAYING) {
+        if (previousState == gameState.PLAYING || previousState == gameState.ESCAPE_MENU) {
             currentState = gameState.PLAYING;
         }
     }
@@ -407,5 +409,23 @@ public class BombermanGame extends Application {
     private boolean isInCamera(Entity entity) {
         return entity.getX() >= cameraX && entity.getX() < cameraX + WIDTH * Sprite.SCALED_SIZE
                 && entity.getY() >= cameraY && entity.getY() < cameraY + HEIGHT * Sprite.SCALED_SIZE;
+    }
+    public void reset() {
+        //clear old data
+        bombs.clear();
+        ebombs.clear();
+        entities.clear();
+        items.clear();
+        enemies.clear();
+        stillObjects.clear();
+
+        //recreate entities
+        bomber.setHp(3);
+        bomber.setDead(false);
+        bomber.setExplosionRange(1);
+        bomber.setImage(Sprite.player_right.getFxImage());
+
+        setLevel(1);
+
     }
 }
