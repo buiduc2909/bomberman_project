@@ -2,6 +2,7 @@ package uet.oop.bomberman.entities;
 
 import javafx.scene.image.Image;
 import uet.oop.bomberman.BombermanGame;
+import uet.oop.bomberman.SFXManager;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.graphics.SpriteSheet;
 
@@ -27,6 +28,7 @@ public class Portal extends Entity {
         if (!isOpened && enemies.isEmpty()) {
             Image openedImg = new Sprite(Sprite.DEFAULT_SIZE, 4, 1, SpriteSheet.tiles, 14, 14).getFxImage();
             setImg(openedImg);
+            SFXManager.playSound("res/sound/Portal Open.wav");
             isOpened = true;
         }
 
