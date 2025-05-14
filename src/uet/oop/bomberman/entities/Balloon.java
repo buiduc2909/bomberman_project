@@ -82,9 +82,6 @@ public class Balloon extends Ghost {
     }
 
     public void update() {
-        if (!isAlive) {
-            this.img = Sprite.balloom_dead.getFxImage();
-        }
         move();
         checkBombCollision();
     }
@@ -122,7 +119,6 @@ public class Balloon extends Ghost {
 
     public void die() {
         this.isAlive = false;
-        this.img = Sprite.balloom_dead.getFxImage();
         System.out.println("💀 Balloon đã chết do dính bom!");
         if(BombermanGame.getCurrentState() == BombermanGame.gameState.PLAYING){
             SFXManager.playSound("res/sound/Enemy Death.wav");
@@ -133,7 +129,7 @@ public class Balloon extends Ghost {
             public void run() {
                 Platform.runLater(() -> enemies.remove(Balloon.this));
             }
-        }, 2500);
+        }, 10);
     }
 
     private int getNewDirection() {
