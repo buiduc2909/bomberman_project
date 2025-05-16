@@ -2,6 +2,8 @@ package uet.oop.bomberman.entities;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
+import uet.oop.bomberman.BombermanGame;
+import uet.oop.bomberman.SFXManager;
 import uet.oop.bomberman.graphics.Sprite;
 
 import java.util.*;
@@ -80,9 +82,6 @@ public class Balloon extends Ghost {
     }
 
     public void update() {
-        if (!isAlive) {
-            this.img = Sprite.balloom_dead.getFxImage();
-        }
         move();
         checkBombCollision();
     }
@@ -120,16 +119,17 @@ public class Balloon extends Ghost {
 
     public void die() {
         this.isAlive = false;
-        this.img = Sprite.balloom_dead.getFxImage();
         System.out.println("💀 Balloon đã chết do dính bom!");
-
+        if(BombermanGame.getCurrentState() == BombermanGame.gameState.PLAYING){
+            SFXManager.playSound("res/sound/Enemy Death.wav");
+        }
         // Xóa khỏi danh sách sau 2.5 giây
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(() -> enemies.remove(Balloon.this));
             }
-        }, 2500);
+        }, 10);
     }
 
     private int getNewDirection() {

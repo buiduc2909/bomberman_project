@@ -2,6 +2,7 @@ package uet.oop.bomberman.entities;
 
 import javafx.application.Platform;
 import uet.oop.bomberman.BombermanGame;
+import uet.oop.bomberman.SFXManager;
 import uet.oop.bomberman.graphics.Sprite;
 
 import javafx.scene.image.Image;
@@ -156,7 +157,9 @@ public class BomberEnemy extends Ghost {
         this.isAlive = false;
         this.img = Sprite.bomberenemy_dead.getFxImage(); // Hiển thị ảnh chết
         System.out.println("💀 BomberEnemy đã chết do dính bom!");
-
+        if(BombermanGame.getCurrentState() == BombermanGame.gameState.PLAYING){
+            SFXManager.playSound("res/sound/Enemy Death.wav");
+        }
         // Xóa khỏi danh sách sau 0.2 giây
         new Timer().schedule(new TimerTask() {
             @Override

@@ -1,6 +1,8 @@
 package uet.oop.bomberman.entities;
 
 import javafx.scene.image.Image;
+import uet.oop.bomberman.BombermanGame;
+import uet.oop.bomberman.SFXManager;
 import uet.oop.bomberman.graphics.Sprite;
 import java.util.List;
 
@@ -245,7 +247,9 @@ public class Bomber extends Entity {
         System.out.println("Bomber has died!");
         dead = true;
         deathStartTime = System.currentTimeMillis();
-        // Thêm logic xử lý khi người chơi chết, ví dụ: hiển thị màn hình game over
+        if(BombermanGame.getCurrentState() == BombermanGame.gameState.PLAYING){
+            SFXManager.playSound("res/sound/Death.wav");
+        }
     }
     @Override
     public void update() {
@@ -368,7 +372,8 @@ public class Bomber extends Entity {
         for (int i = 0; i < items.size(); i++) {
             Item item = items.get(i);
             if (this.getX() == item.getX() && this.getY() == item.getY() && !item.pickedUp) {
-                item.pickUp(this); // Nhặt vật phẩm
+                item.pickUp(this);// Nhặt vật phẩm
+                SFXManager.playSound("res/sound/Item Pickup.wav");
                 break;
             }
         }
